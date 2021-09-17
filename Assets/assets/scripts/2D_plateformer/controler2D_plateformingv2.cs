@@ -49,6 +49,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
         Rb2d = GetComponent<Rigidbody2D>();
         extrajumps = extrajumpamount;
         state = State.Normal;
+        
     }
     void Update()
     {
@@ -150,26 +151,28 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
                 //asing float to the animator
                 animator.SetFloat("Player_Speed", Mathf.Abs(moveinputX));
-
+                // make a bool to have a constant cheking for the direction of the MC ( via movedir) is mov dir + or - then attribute a consatne like -1 or 1 so the roll is in the right direction but always the same lenght 
                 if (Input.GetKeyDown(KeyCode.M))
                 {
                     RollDir = movedir;
-                    RollSpeed = 250f;
                         state = State.Rolling;
+                    RollSpeed = 20f;
+                 
                 }
                 break;
  
             case State.Rolling:
-                float rollspeeddropmultiplier = 5f;
+                float rollspeeddropmultiplier = 5;
                 RollSpeed -= RollSpeed * rollspeeddropmultiplier * Time.deltaTime;
 
-                float rollspeedminimum = 1.1f;
+                float rollspeedminimum = 7f;
                 if (RollSpeed < rollspeedminimum)
                 {
                     state = State.Normal;
                 }
                 break;
 
+                
         }
     }
      
