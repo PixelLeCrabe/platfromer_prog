@@ -17,6 +17,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
     private float moveinputX;
     private float moveinputY;
     private float dashinput;
+    private bool IsfallingDown;
 
     private Vector2 movedir; 
     private Rigidbody2D Rb2d;
@@ -31,7 +32,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
     private Vector3 rolldirneg = new Vector3(-1, 0, 0);
 
 
-    private bool isgrounded;
+    public bool isgrounded;
     private bool isdashbuttondown;
 
     public Transform groundcheck;
@@ -48,6 +49,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
     private int extrajumps;
     public int extrajumpamount;
+    private bool isDoubleJumping;
 
 
     private void Awake()
@@ -56,6 +58,34 @@ public class controler2D_plateformingv2 : MonoBehaviour
         extrajumps = extrajumpamount;
         state = State.Normal;
                 
+    }
+
+        
+   void DoubleJumpAnimation()
+    {
+        if (extrajumps == 0 && !isgrounded && !IsfallingDown)
+        {
+            isDoubleJumping = true; 
+        }
+
+        if (isDoubleJumping == true)
+        {
+            animator.SetTrigger("DoubleJump");
+        }
+    }
+    
+    void MCflip()
+    {
+        Vector3 charecterScale = transform.localScale;
+        if (Input.GetAxis("Horizontal") < 0)
+        {
+            charecterScale.x = -1;
+        }
+        if (Input.GetAxis("Horizontal") > 0)
+        {
+            charecterScale.x = 1;
+        }
+        transform.localScale = charecterScale;
     }
     void Update()
     {
@@ -70,16 +100,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
                 PlayerCurrentSpeed = moveinputX * speed;
 
                 // flip the MC
-                Vector3 charecterScale = transform.localScale;
-                if (Input.GetAxis("Horizontal") < 0)
-                {
-                    charecterScale.x = -1;
-                }
-                if (Input.GetAxis("Horizontal") > 0)
-                {
-                    charecterScale.x = 1;
-                }
-                transform.localScale = charecterScale;
+                MCflip();
 
                 //dash direction if player is not moving
                 if (moveinputX != 0)
@@ -99,22 +120,27 @@ public class controler2D_plateformingv2 : MonoBehaviour
                     isdashbuttondown = true;
                 } */
 
-                //moveinputY = Input.GetAxis("vertical");
-
-                if (isgrounded == false)
+                if (isgrounded == false && IsfallingDown == false && !isDoubleJumping)
                 {
+                    animator.SetBool("isGrounded", false);
                     animator.SetBool("isJumping", true);
                 }
+              
 
                 // switch back to non jumping
-                else if (isgrounded == true)
+                if ((isgrounded == false && IsfallingDown == true) || isDoubleJumping)
                 {
+                    animator.SetBool("isGrounded", false);
                     animator.SetBool("isJumping", false);
                 }
+                
 
                 if (isgrounded == true)
                 {
                     extrajumps = extrajumpamount;
+                    animator.SetBool("isGrounded", true);
+                    isDoubleJumping = false;
+                    animator.SetBool("DoubleJump", false);
                 }
 
                 //extra jumps 
@@ -142,6 +168,8 @@ public class controler2D_plateformingv2 : MonoBehaviour
                     Rb2d.velocity = Vector2.up * jumpforce;
                 }
 
+               
+
                 //Jump tweaking (gravitu modifier)
                 if (Rb2d.velocity.y < 0)
                 {
@@ -153,7 +181,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
                     Rb2d.velocity += Vector2.up * Physics2D.gravity.y * (lowjumpmultipliyer) * Time.deltaTime;
                 }
 
-               
+                DoubleJumpAnimation();
 
                 //asing float to the animator
                 animator.SetFloat("Player_Speed", Mathf.Abs(moveinputX));
@@ -166,7 +194,21 @@ public class controler2D_plateformingv2 : MonoBehaviour
                      state = State.Rolling;
                     RollSpeed = 10f;
                 }
- 
+
+                if (Rb2d.velocity.y < -0.01)
+                {
+                    IsfallingDown = true;
+                }
+                else
+                {
+                    IsfallingDown = false;
+                }
+
+                if (IsfallingDown == true)
+                {
+                    animator.SetTrigger("FallingDown");
+                }
+               
                 break;
  
             case State.Rolling:
@@ -206,11 +248,11 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
         switch (state)
         {
-      
-          case State.Normal:
-
-        isgrounded = Physics2D.OverlapCircle(groundcheck.position, checkradius, whatisground);
-
+            //if(circleColider.isTrigger && circleColider.e )
+            //isgrounded = circleColider.isTrigger
+            case State.Normal:
+                isgrounded = Physics2D.OverlapCircle(groundcheck.position, checkradius, whatisground);
+                
 
                 //Dash 
                 if (isdashbuttondown)
