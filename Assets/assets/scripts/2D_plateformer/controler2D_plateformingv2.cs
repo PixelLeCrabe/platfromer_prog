@@ -30,12 +30,13 @@ public class controler2D_plateformingv2 : MonoBehaviour
     private Vector3 RollDir;
     private Vector3 lastRollDir;
     private float airRoll;
-    private float airRollcount;
+    public float airRollamount;
 
     public float RollSpeed;
     private State state;
     private Vector3 rolldirpos = new Vector3(1, 0, 0);
     private Vector3 rolldirneg = new Vector3(-1, 0, 0);
+    private bool isRollinginair;
 
 
     public bool isgrounded;
@@ -63,7 +64,9 @@ public class controler2D_plateformingv2 : MonoBehaviour
         Rb2d = GetComponent<Rigidbody2D>();
         extrajumps = extrajumpamount;
         state = State.Normal;
-        
+        airRoll = airRollamount;
+
+
 
     }
 
@@ -71,7 +74,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
    void DoubleJumpAnimation()
     {
-        if (extrajumps == 0 && !isgrounded && !IsfallingDown)
+        if (extrajumps == 0 && !isgrounded && !IsfallingDown )
         {
             isDoubleJumping = true; 
         }
@@ -96,11 +99,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
         transform.localScale = charecterScale;
     }
     void MCjumping()
-    {
-        // add anti perma dash in the air (there is a float already set up)
-        
-
-        //should add CD on the dash 2 maybe
+    {    
 
         if (Input.GetKeyDown(KeyCode.UpArrow) && extrajumps > 0)
             {
@@ -137,18 +136,23 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
     void roll()
     {
+        // add anti perma dash in the air (there is a float already set up)
 
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        //should add CD on the dash 2 maybe
+        if (Input.GetKeyDown(KeyCode.LeftShift) && airRoll >= 0)
         {
             RollDir = movedir;
             state = State.Rolling;
             RollSpeed = 10f;
+            airRoll--;
+
+
         }
     }
 
     void fallingdown()
     {
-        if (Rb2d.velocity.y < -0.01)
+        if (Rb2d.velocity.y < -0.01 && isRollinginair == false)
         {
             IsfallingDown = true;
         }
@@ -165,6 +169,8 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
     void rolling()
     {
+        animator.SetTrigger("isrolling");
+
         if (moveinputX == 0)
         {
             RollDir = new Vector3(transform.localScale.x, 0);
@@ -179,6 +185,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
             RollDir = rolldirpos;
         }
 
+
         float rollspeeddropmultiplier = 3;
         RollSpeed -= RollSpeed * rollspeeddropmultiplier * Time.deltaTime;
 
@@ -188,7 +195,8 @@ public class controler2D_plateformingv2 : MonoBehaviour
             state = State.Normal;
         }
 
-        airRollcount = airRollcount++ ; 
+        isRollinginair = true;
+        animator.SetBool("MCisRollinginair", true);
     }
    
     // fixed update fonctions 
@@ -237,7 +245,6 @@ public class controler2D_plateformingv2 : MonoBehaviour
         if (collision.gameObject.tag == "Sol" && hasjumped == true)
         {
             
-            Debug.Log("landed");
             //animator.SetBool("islanded",true);
             GetComponent<Animator>().Play("MC_landed");
 
@@ -252,7 +259,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
                 // Test zone start
 
-                //landedanimtest();
+               
 
                 //test zone end
 
@@ -285,7 +292,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
                     isdashbuttondown = true;
                 } */
 
-                if (isgrounded == false && IsfallingDown == false && !isDoubleJumping)
+                if (isgrounded == false && IsfallingDown == false && !isDoubleJumping && isRollinginair == false)
                 {
                     animator.SetBool("isGrounded", false);
                     animator.SetBool("isJumping", true);
@@ -302,10 +309,14 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
                 if (isgrounded == true)
                 {
+                    airRoll = airRollamount;
                     extrajumps = extrajumpamount;
                     animator.SetBool("isGrounded", true);
                     isDoubleJumping = false;
                     animator.SetBool("DoubleJump", false);
+                    isRollinginair = false;
+                    animator.SetBool("MCisRollinginair", false);
+                    animator.SetBool("isJumping", false);
                 }
 
                 //extra jumps + MC jump
