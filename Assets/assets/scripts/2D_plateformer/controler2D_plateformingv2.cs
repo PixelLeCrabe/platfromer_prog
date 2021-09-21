@@ -29,6 +29,8 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
     private Vector3 RollDir;
     private Vector3 lastRollDir;
+    private float airRoll;
+    private float airRollcount;
 
     public float RollSpeed;
     private State state;
@@ -95,6 +97,11 @@ public class controler2D_plateformingv2 : MonoBehaviour
     }
     void MCjumping()
     {
+        // add anti perma dash in the air (there is a float already set up)
+        
+
+        //should add CD on the dash 2 maybe
+
         if (Input.GetKeyDown(KeyCode.UpArrow) && extrajumps > 0)
             {
                 Rb2d.velocity = Vector2.up * jumpforce;
@@ -180,6 +187,8 @@ public class controler2D_plateformingv2 : MonoBehaviour
         {
             state = State.Normal;
         }
+
+        airRollcount = airRollcount++ ; 
     }
    
     // fixed update fonctions 
