@@ -472,7 +472,7 @@ GameObject:
   m_Layer: 0
   m_Name: MCSpecialAttakpoint
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -640,7 +640,7 @@ GameObject:
   m_Layer: 8
   m_Name: MCattackpoint
   m_TagString: Untagged
-  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 7148428337604731935, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -843,6 +843,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4666218146036064308, guid: 1aa16070bca3c8645af6af51eff96401,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4666218146036064308, guid: 1aa16070bca3c8645af6af51eff96401,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4666218146036064308, guid: 1aa16070bca3c8645af6af51eff96401,
+        type: 3}
+      propertyPath: m_UsedByEffector
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4666218146036064309, guid: 1aa16070bca3c8645af6af51eff96401,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -908,6 +923,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: sol
       objectReference: {fileID: 0}
+    - target: {fileID: 4666218146036064311, guid: 1aa16070bca3c8645af6af51eff96401,
+        type: 3}
+      propertyPath: m_TagString
+      value: Sol
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1aa16070bca3c8645af6af51eff96401, type: 3}
 --- !u!1 &1235059718
@@ -960,9 +980,9 @@ MonoBehaviour:
   m_XDamping: 1.5
   m_YDamping: 1
   m_ZDamping: 1
-  m_ScreenX: 0.45
+  m_ScreenX: 0.5
   m_ScreenY: 0.5
-  m_CameraDistance: 4
+  m_CameraDistance: 5
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
   m_DeadZoneDepth: 0
@@ -1074,7 +1094,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1243222889}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.0630082, y: -13.691, z: -4}
+  m_LocalPosition: {x: 0.83, y: -13.691, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1151,6 +1171,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4666218146036064308, guid: 1aa16070bca3c8645af6af51eff96401,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4666218146036064309, guid: 1aa16070bca3c8645af6af51eff96401,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1788,7 +1813,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2076581203}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.0630082, y: -13.691, z: -4}
+  m_LocalPosition: {x: 0.83, y: -13.691, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1235059719}
