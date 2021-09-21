@@ -14,9 +14,14 @@ public class controler2D_plateformingv2 : MonoBehaviour
         Rolling,
     }
 
+    //boutleg
+    private bool hasjumped;
+    //bool islanded;
+
     private float moveinputX;
     private float moveinputY;
     private float dashinput;
+    private bool IsfallingDown;
 
     private Vector2 movedir; 
     private Rigidbody2D Rb2d;
@@ -24,6 +29,8 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
     private Vector3 RollDir;
     private Vector3 lastRollDir;
+    private float airRoll;
+    private float airRollcount;
 
     public float RollSpeed;
     private State state;
@@ -31,7 +38,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
     private Vector3 rolldirneg = new Vector3(-1, 0, 0);
 
 
-    private bool isgrounded;
+    public bool isgrounded;
     private bool isdashbuttondown;
 
     public Transform groundcheck;
@@ -48,6 +55,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
     private int extrajumps;
     public int extrajumpamount;
+    private bool isDoubleJumping;
 
 
     private void Awake()
@@ -55,14 +63,201 @@ public class controler2D_plateformingv2 : MonoBehaviour
         Rb2d = GetComponent<Rigidbody2D>();
         extrajumps = extrajumpamount;
         state = State.Normal;
-                
+        
+
     }
+
+    // update fonctions   
+
+   void DoubleJumpAnimation()
+    {
+        if (extrajumps == 0 && !isgrounded && !IsfallingDown)
+        {
+            isDoubleJumping = true; 
+        }
+
+        if (isDoubleJumping == true)
+        {
+            animator.SetTrigger("DoubleJump");
+        }
+    }
+
+    void MCflip()
+    {
+        Vector3 charecterScale = transform.localScale;
+        if (Input.GetAxis("Horizontal") < 0)
+        {
+            charecterScale.x = -1;
+        }
+        if (Input.GetAxis("Horizontal") > 0)
+        {
+            charecterScale.x = 1;
+        }
+        transform.localScale = charecterScale;
+    }
+    void MCjumping()
+    {
+        // add anti perma dash in the air (there is a float already set up)
+        
+
+        //should add CD on the dash 2 maybe
+
+        if (Input.GetKeyDown(KeyCode.UpArrow) && extrajumps > 0)
+            {
+                Rb2d.velocity = Vector2.up * jumpforce;
+                extrajumps--;
+            }
+            //Aled
+
+            if (Input.GetKeyDown(KeyCode.W) && extrajumps > 0)
+            {
+                Rb2d.velocity = Vector2.up * jumpforce;
+                extrajumps--;
+            }
+
+            else if (Input.GetKeyDown(KeyCode.UpArrow) && extrajumps == 0 && isgrounded == true)
+            {
+                Rb2d.velocity = Vector2.up * jumpforce;
+            }
+        }
+    
+    void Jumpteaking()
+    {
+        //Jump tweaking (gravitu modifier)
+        if (Rb2d.velocity.y < 0)
+        {
+            //Rb2d.velocity += Rb2d.velocity * fallmultipliyertest;
+            Rb2d.velocity += Vector2.up * Physics2D.gravity.y * (fallmultipliyer - 1) * Time.deltaTime;
+        }
+        else if (Rb2d.velocity.y > 0 && Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            Rb2d.velocity += Vector2.up * Physics2D.gravity.y * (lowjumpmultipliyer) * Time.deltaTime;
+        }
+    }
+
+    void roll()
+    {
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            RollDir = movedir;
+            state = State.Rolling;
+            RollSpeed = 10f;
+        }
+    }
+
+    void fallingdown()
+    {
+        if (Rb2d.velocity.y < -0.01)
+        {
+            IsfallingDown = true;
+        }
+        else
+        {
+            IsfallingDown = false;
+        }
+
+        if (IsfallingDown == true)
+        {
+            animator.SetTrigger("FallingDown");
+        }
+    }
+
+    void rolling()
+    {
+        if (moveinputX == 0)
+        {
+            RollDir = new Vector3(transform.localScale.x, 0);
+        }
+
+        if (moveinputX < 0)
+        {
+            RollDir = rolldirneg;
+        }
+        else if (moveinputX > 0)
+        {
+            RollDir = rolldirpos;
+        }
+
+        float rollspeeddropmultiplier = 3;
+        RollSpeed -= RollSpeed * rollspeeddropmultiplier * Time.deltaTime;
+
+        float rollspeedminimum = 7f; 
+        if (RollSpeed < rollspeedminimum)
+        {
+            state = State.Normal;
+        }
+
+        airRollcount = airRollcount++ ; 
+    }
+   
+    // fixed update fonctions 
+    void Dash()
+
+
+    {
+        if (isdashbuttondown)
+        {
+            LastMoveDir = LastMoveDir / Mathf.Abs(LastMoveDir);
+
+            CurrentPostion = new Vector3(transform.position.x + (LastMoveDir * dashdistance), transform.position.y);
+            Rb2d.MovePosition(CurrentPostion);
+
+            isdashbuttondown = false;
+            CurrentPostion = transform.position;
+        }
+
+        Rb2d.velocity = new Vector2(PlayerCurrentSpeed, Rb2d.velocity.y);
+    }
+
+    void Mchasjumpedonce()
+    {
+        if (Rb2d.velocity.y > .01)
+        {
+            hasjumped = true;
+        }
+    }
+
+    // Test zone start
+
+    /*void landedanimtest()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            GetComponent<Animator>().Play("MC_landed");
+        }
+    }
+    */
+   
+    // test Zone end 
+   
+    //fix that shit its alway true gotta be trigger only when it lands
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Sol" && hasjumped == true)
+        {
+            
+            Debug.Log("landed");
+            //animator.SetBool("islanded",true);
+            GetComponent<Animator>().Play("MC_landed");
+
+        }
+    }
+
     void Update()
     {
         switch (state)
         {
             case State.Normal:
 
+                // Test zone start
+
+                //landedanimtest();
+
+                //test zone end
+
+                //mega boutleg cheking if the player has jumped one               
+                Mchasjumpedonce();
 
                 moveinputX = Input.GetAxis("Horizontal");
                 movedir = new Vector3(moveinputX, 0);
@@ -70,16 +265,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
                 PlayerCurrentSpeed = moveinputX * speed;
 
                 // flip the MC
-                Vector3 charecterScale = transform.localScale;
-                if (Input.GetAxis("Horizontal") < 0)
-                {
-                    charecterScale.x = -1;
-                }
-                if (Input.GetAxis("Horizontal") > 0)
-                {
-                    charecterScale.x = 1;
-                }
-                transform.localScale = charecterScale;
+                MCflip();
 
                 //dash direction if player is not moving
                 if (moveinputX != 0)
@@ -99,100 +285,56 @@ public class controler2D_plateformingv2 : MonoBehaviour
                     isdashbuttondown = true;
                 } */
 
-                //moveinputY = Input.GetAxis("vertical");
-
-                if (isgrounded == false)
+                if (isgrounded == false && IsfallingDown == false && !isDoubleJumping)
                 {
+                    animator.SetBool("isGrounded", false);
                     animator.SetBool("isJumping", true);
                 }
+              
 
                 // switch back to non jumping
-                else if (isgrounded == true)
+                if ((isgrounded == false && IsfallingDown == true) || isDoubleJumping)
                 {
+                    animator.SetBool("isGrounded", false);
                     animator.SetBool("isJumping", false);
                 }
+                
 
                 if (isgrounded == true)
                 {
                     extrajumps = extrajumpamount;
+                    animator.SetBool("isGrounded", true);
+                    isDoubleJumping = false;
+                    animator.SetBool("DoubleJump", false);
                 }
 
-                //extra jumps 
-               /* if (Input.GetAxis("Vertical")>0.1 && extrajumps > 0)
-                {
-                    Rb2d.velocity = Vector2.up * jumpforce;
-                    extrajumps--;
-                }*/
+                //extra jumps + MC jump
+                
+                MCjumping();
 
-                if (Input.GetKeyDown(KeyCode.UpArrow) && extrajumps > 0)
-                {
-                    Rb2d.velocity = Vector2.up * jumpforce;
-                    extrajumps--;
-                }
-                //Aled
+                // tweak du jump via gravity multipliyer UwU
+                Jumpteaking();
 
-                if (Input.GetKeyDown(KeyCode.W) && extrajumps > 0)
-                {
-                    Rb2d.velocity = Vector2.up * jumpforce;
-                    extrajumps--;
-                }
 
-                else if (Input.GetKeyDown(KeyCode.UpArrow) && extrajumps == 0 && isgrounded == true)
-                {
-                    Rb2d.velocity = Vector2.up * jumpforce;
-                }
 
-                //Jump tweaking (gravitu modifier)
-                if (Rb2d.velocity.y < 0)
-                {
-                    //Rb2d.velocity += Rb2d.velocity * fallmultipliyertest;
-                    Rb2d.velocity += Vector2.up * Physics2D.gravity.y * (fallmultipliyer - 1) * Time.deltaTime;
-                }
-                else if (Rb2d.velocity.y > 0 && Input.GetKeyDown(KeyCode.UpArrow))
-                {
-                    Rb2d.velocity += Vector2.up * Physics2D.gravity.y * (lowjumpmultipliyer) * Time.deltaTime;
-                }
-
-               
+                DoubleJumpAnimation();
 
                 //asing float to the animator
                 animator.SetFloat("Player_Speed", Mathf.Abs(moveinputX));
-                // make a bool to have a constant cheking for the direction of the MC ( via movedir) is mov dir + or - then attribute a consatne like -1 or 1 so the roll is in the right direction but always the same lenght 
-           
 
-                if (Input.GetKeyDown(KeyCode.LeftShift))
-                {
-                    RollDir = movedir;
-                     state = State.Rolling;
-                    RollSpeed = 10f;
-                }
- 
+                roll();
+
+
+                fallingdown();
+
+                //MCLanded();
+
                 break;
  
             case State.Rolling:
-
-                 if (moveinputX == 0)
-                  {
-                    RollDir = new Vector3(transform.localScale.x, 0);
-                  }
-                
-                if (moveinputX < 0)
-                {
-                    RollDir = rolldirneg;
-                }
-                else if (moveinputX > 0)
-                {
-                    RollDir = rolldirpos;
-                }
-
-                float rollspeeddropmultiplier = 3;
-                RollSpeed -= RollSpeed * rollspeeddropmultiplier * Time.deltaTime;
-
-                float rollspeedminimum = 7f;
-                if (RollSpeed < rollspeedminimum)
-                {
-                    state = State.Normal;
-                }
+                //
+                rolling();
+         //
                 break;
 
                 
@@ -206,25 +348,14 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
         switch (state)
         {
-      
-          case State.Normal:
-
-        isgrounded = Physics2D.OverlapCircle(groundcheck.position, checkradius, whatisground);
+            //if(circleColider.isTrigger && circleColider.e )
+            //isgrounded = circleColider.isTrigger
+            case State.Normal:
+                isgrounded = Physics2D.OverlapCircle(groundcheck.position, checkradius, whatisground);
 
 
                 //Dash 
-                if (isdashbuttondown)
-                {
-                    LastMoveDir = LastMoveDir / Mathf.Abs(LastMoveDir);
-
-                    CurrentPostion = new Vector3(transform.position.x + (LastMoveDir * dashdistance), transform.position.y);
-                    Rb2d.MovePosition(CurrentPostion);
-
-                    isdashbuttondown = false;
-                    CurrentPostion = transform.position;
-                }
-
-                 Rb2d.velocity = new Vector2(PlayerCurrentSpeed, Rb2d.velocity.y);
+                Dash();
                 break;
             case State.Rolling:
                 Rb2d.velocity = RollDir * RollSpeed;
