@@ -56,7 +56,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
     private int extrajumps;
     public int extrajumpamount;
-    private bool isDoubleJumping;
+    public bool isDoubleJumping;
 
 
     private void Awake()
@@ -100,25 +100,28 @@ public class controler2D_plateformingv2 : MonoBehaviour
     }
     void MCjumping()
     {    
-
-        if (Input.GetKeyDown(KeyCode.UpArrow) && extrajumps > 0)
+        
+       /* if (Input.GetKeyDown(KeyCode.UpArrow) && extrajumps > 0)
             {
                 Rb2d.velocity = Vector2.up * jumpforce;
                 extrajumps--;
-            }
-            //Aled
+            }*/
 
-            if (Input.GetKeyDown(KeyCode.W) && extrajumps > 0)
-            {
-                Rb2d.velocity = Vector2.up * jumpforce;
-                extrajumps--;
-            }
-
-            else if (Input.GetKeyDown(KeyCode.UpArrow) && extrajumps == 0 && isgrounded == true)
-            {
-                Rb2d.velocity = Vector2.up * jumpforce;
-            }
+        if ((Input.GetButtonDown("Jump")|| Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps > 0)
+        {
+            Rb2d.velocity = Vector2.up * jumpforce;
+            extrajumps--;
         }
+       
+        //Aled
+    
+         if ((Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps == 0  && isgrounded == true)
+         {
+             Rb2d.velocity = Vector2.up * jumpforce;
+         }
+         
+        } // else removed
+        
     
     void Jumpteaking()
     {
@@ -139,14 +142,14 @@ public class controler2D_plateformingv2 : MonoBehaviour
         // add anti perma dash in the air (there is a float already set up)
 
         //should add CD on the dash 2 maybe
-        if (Input.GetKeyDown(KeyCode.LeftShift) && airRoll >= 0)
-        {
+
+        //put a small CD on the roll
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetAxis("roll") >=0.1f ) && airRoll >= 0 )
+            {
             RollDir = movedir;
             state = State.Rolling;
             RollSpeed = 10f;
             airRoll--;
-
-
         }
     }
 
@@ -169,7 +172,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
     void rolling()
     {
-        animator.SetTrigger("isrolling");
+       
 
         if (moveinputX == 0)
         {
@@ -195,8 +198,10 @@ public class controler2D_plateformingv2 : MonoBehaviour
             state = State.Normal;
         }
 
+        animator.SetTrigger("isrolling");
+
         isRollinginair = true;
-        animator.SetBool("MCisRollinginair", true);
+        animator.SetBool("MCisRollinginair", true);         
     }
    
     // fixed update fonctions 
@@ -226,6 +231,21 @@ public class controler2D_plateformingv2 : MonoBehaviour
         }
     }
 
+    void GroundedChecks()
+    {
+        if (isgrounded == true)
+        {
+            airRoll = airRollamount;
+            extrajumps = extrajumpamount;
+            animator.SetBool("isGrounded", true);
+            isDoubleJumping = false;
+            animator.SetBool("DoubleJump", false);
+            isRollinginair = false;
+            animator.SetBool("MCisRollinginair", false);
+            animator.SetBool("isJumping", false);
+        }
+    }
+
     // Test zone start
 
     /*void landedanimtest()
@@ -236,9 +256,9 @@ public class controler2D_plateformingv2 : MonoBehaviour
         }
     }
     */
-   
+
     // test Zone end 
-   
+
     //fix that shit its alway true gotta be trigger only when it lands
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -259,7 +279,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
                 // Test zone start
 
-               
+              
 
                 //test zone end
 
@@ -280,8 +300,8 @@ public class controler2D_plateformingv2 : MonoBehaviour
                     LastMoveDir = moveinputX;
                 }
 
-                // dashing ground + air
-                if (Input.GetKeyDown(KeyCode.Space))
+                // dashing ground + air (not space anymore)
+                if (Input.GetKeyDown(KeyCode.M))
                 {
                     isdashbuttondown = true;
                 }
@@ -306,18 +326,9 @@ public class controler2D_plateformingv2 : MonoBehaviour
                     animator.SetBool("isJumping", false);
                 }
                 
-
-                if (isgrounded == true)
-                {
-                    airRoll = airRollamount;
-                    extrajumps = extrajumpamount;
-                    animator.SetBool("isGrounded", true);
-                    isDoubleJumping = false;
-                    animator.SetBool("DoubleJump", false);
-                    isRollinginair = false;
-                    animator.SetBool("MCisRollinginair", false);
-                    animator.SetBool("isJumping", false);
-                }
+                // setting all the bool the right state
+                 GroundedChecks();
+                
 
                 //extra jumps + MC jump
                 
@@ -372,10 +383,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
                 Rb2d.velocity = RollDir * RollSpeed;
                
                 break;
-        }
-
-        //Rb2d.velocity = Rb2d.velocity = Vector2.up * jumpforce;
-        //extrajumps--;
+        }       
     }  
     
 }
