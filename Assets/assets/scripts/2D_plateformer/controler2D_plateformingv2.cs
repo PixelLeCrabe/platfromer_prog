@@ -144,7 +144,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
         //should add CD on the dash 2 maybe
 
         //put a small CD on the roll
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetAxis("roll") >=0.1f ) && airRoll >= 0 )
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("Fire3")  ) && airRoll >= 0 )
             {
             RollDir = movedir;
             state = State.Rolling;

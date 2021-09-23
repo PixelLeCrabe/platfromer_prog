@@ -25,7 +25,7 @@ public class CaC_combat_systeme : MonoBehaviour
     {
         if (Time.time >= nextAttack)
         {
-            if (Input.GetKeyDown(KeyCode.T) || Input.GetButtonDown("Fire3") )
+            if (Input.GetKeyDown(KeyCode.T) || Input.GetAxis("roll") >= 0.1f)
             {
                 Attack();
                 nextAttack = Time.time + 1f / MCattackRate;
