@@ -20,6 +20,10 @@ public class CaC_combat_systeme : MonoBehaviour
 
     public LayerMask EnemyLayerMask;
 
+    void OnDrawGizmoSelected()
+    {
+        Gizmos.DrawWireSphere(MCattackpoint.position, MCattackRange);
+    }
 
     void Update()
     {
@@ -53,6 +57,9 @@ public class CaC_combat_systeme : MonoBehaviour
                 nextSpecialattak = Time.time + 1F / Specialattakrate;
                 Debug.Log("Special atttatak");
                }
+
+           OnDrawGizmoSelected();
+
         }
 
         void SpecialAttak()
@@ -67,10 +74,7 @@ public class CaC_combat_systeme : MonoBehaviour
                 enemy.GetComponent<Enemy>().takeDamage(MCSpecialAttakDammage);
 
             }
-            void OnDrawGizmoSelected()
-            {
-                Gizmos.DrawWireSphere(MCattackpoint.position, MCattackRange);
-            }
+            
         }
     }
 }

@@ -41,6 +41,7 @@ public class HPbar : MonoBehaviour
     public void Sethealth()
     {
         slider.value = currenthealth;
+
     }
 
     private void Update()
