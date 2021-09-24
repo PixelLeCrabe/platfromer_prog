@@ -58,7 +58,6 @@ public class controler2D_plateformingv2 : MonoBehaviour
     public int extrajumpamount;
     public bool isDoubleJumping;
 
-
     private void Awake()
     {
         Rb2d = GetComponent<Rigidbody2D>();
@@ -83,6 +82,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
         {
             animator.SetTrigger("DoubleJump");
         }
+        
     }
 
     void MCflip()
