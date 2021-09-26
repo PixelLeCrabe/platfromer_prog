@@ -96,6 +96,10 @@ public class ennemy_IA : MonoBehaviour
             Player.GetComponent<Enemy>().takeDamage(EnnemyDamage);
         }
 
+        if (Vector3.Distance(transform.position, MCposition) > EnnemyAttakrange )
+        {
+            state = State.ChaseTarget;
+        }
     }
 
     // Update is called once per frame
@@ -117,7 +121,7 @@ public class ennemy_IA : MonoBehaviour
             case State.ChaseTarget:
                 Debug.Log("state is Chase target");
                 Findthetarget();
-                Targetoutofrange();
+                //Targetoutofrange();
 
 
            break;
