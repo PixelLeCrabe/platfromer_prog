@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class controler2D_plateformingv2 : MonoBehaviour 
 {
+    //public Vector3 MCposition;
+
     public Animator animator;
     public event EventHandler OnPpress;
 
@@ -63,10 +65,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
         Rb2d = GetComponent<Rigidbody2D>();
         extrajumps = extrajumpamount;
         state = State.Normal;
-        airRoll = airRollamount;
-
-
-
+        airRoll = airRollamount;       
     }
 
     // update fonctions   

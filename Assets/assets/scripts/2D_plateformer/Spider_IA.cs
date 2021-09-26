@@ -8,6 +8,7 @@ public class Spider_IA : MonoBehaviour
     private float SpiderattakRange;
    
     public float SpiderSpeed;
+    private Vector2 move;
 
     public int SpiderMaxhealth;
     private int Spidercurrenthealth;
@@ -21,7 +22,7 @@ public class Spider_IA : MonoBehaviour
 
     private Transform playerPos;
 
-    public Animator animator;
+    public Animator Sanimator;
 
     public Rigidbody2D rigidbody2D;
 
@@ -34,14 +35,13 @@ public class Spider_IA : MonoBehaviour
 
     void GettoTarget()
     {
-        Collider2D[] DetectMC = Physics2D.OverlapCircleAll(SpiderDetectpoint.position, SpiderDetectrange, MCLayerMask); 
-        
-        foreach (Collider2D Player in DetectMC)
-            {
-            float move = SpiderSpeed * Time.deltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, playerPos.position, move);
+        if (Input.GetKey(KeyCode.L))
+        {
+            Sanimator.SetTrigger("Walking");
+            move.x = SpiderSpeed * Time.deltaTime;
+            transform.position = Vector3.MoveTowards(transform.position, playerPos.position, move.x);
         }
-        animator.SetTrigger("Walking");
+        
     }
     
     void SpiderAttak ()
@@ -55,7 +55,8 @@ public class Spider_IA : MonoBehaviour
             Player.GetComponent<Enemy>().takeDamage(SpiderDamage);
         }
 
-        animator.SetTrigger("Attaking");
+        Sanimator.SetTrigger("Attaking");
+
     }
 
     private void Die()
@@ -69,6 +70,9 @@ public class Spider_IA : MonoBehaviour
     }
     void Update()
     {
+        Debug.Log( "Spider" + rigidbody2D.velocity.x);
+
+        Sanimator.SetFloat("Speed", Mathf.Abs(rigidbody2D.velocity.x));
         GettoTarget();
         SpiderAttak();
         Die();
@@ -76,6 +80,6 @@ public class Spider_IA : MonoBehaviour
 
     private void FixedUpdate()
     {
-        animator.SetFloat("Player_Speed", Mathf.Abs(rigidbody2D.velocity.x));
+        rigidbody2D.velocity = move;
     }
 }
