@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ennemy_IA : MonoBehaviour
 {
+    public Rigidbody2D rb2d;
+
     public LayerMask TargetLayerMask;
 
     private Vector3 DistanceToMC;
@@ -21,6 +23,12 @@ public class ennemy_IA : MonoBehaviour
     public float Ennemydetectrange;
     public Transform EnnemyAttakrangePoint;
 
+    public float AttakCD;
+    public bool canAttak;
+
+    private float NextAttack;
+    public float EAttackRate;
+    public bool coolDown;
     public float EnnemySpeed;
 
     private enum State
@@ -35,18 +43,20 @@ public class ennemy_IA : MonoBehaviour
     void Start()
     {
         state = State.idle;
-        
+        //rb2d = GetComponent<Rigidbody2D>();
+
     }
+
 
     private void FindMcPosition()
     {
-        MCposition = GameObject.FindGameObjectWithTag("Player").transform.position;
-        
+        MCposition = GameObject.FindGameObjectWithTag("Player").transform.position;       
     }
 
     private void idle()
     {
-        GetComponent<Animator>().Play("spider_idle");
+        Eanimator.SetTrigger("Idle");
+        //GetComponent<Animator>().Play("spider_idle");
     }
 
     private void targetinrange()
@@ -61,20 +71,33 @@ public class ennemy_IA : MonoBehaviour
 
     private void Findthetarget()
     {
+
+        Vector3 charecterScale = transform.localScale;
+        if (Input.GetAxis("Horizontal") < 0)
+        {
+            charecterScale.x = -1;
+        }
+        if (Input.GetAxis("Horizontal") > 0)
+        {
+            charecterScale.x = 1;
+        }
+        transform.localScale = charecterScale;
+
+        Eanimator.SetTrigger("Walking");
+        
+        // the spider copy thes scale of the MC making it face backward when the Mc run at it
         Vector3 dirction = transform.position - MCposition;
 
         // Normalize resultant vector to unit Vector.
         dirction = -dirction.normalized;
+        dirction.y = 0;
 
         // Move in the direction of the direction vector every frame.
         transform.position += dirction * Time.deltaTime * EnnemySpeed;
 
-        if (Vector3.Distance(transform.position, MCposition) < EnnemyAttakrange)
-        {
-            state = State.attaking;
-        }
     }
 
+    //Not used cuz buged
     private void Targetoutofrange()
     {
         if (Vector3.Distance(transform.position, MCposition) < Ennemydetectrange + 1f)
@@ -82,38 +105,37 @@ public class ennemy_IA : MonoBehaviour
             state = State.idle;
         }
     }
-   
-    private void Attak()
+
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        GetComponent<Animator>().Play("spider_attak");
-
-        Collider2D[] hitMC = Physics2D.OverlapCircleAll(EnnemyAttakrangePoint.position, EnnemyAttakrange, TargetLayerMask);
-
-        foreach (Collider2D Player in hitMC)
+        if (collision.transform.CompareTag("Player"))
         {
-            Debug.Log("enemy hit " + Player.name);
-
-            Player.GetComponent<Enemy>().takeDamage(EnnemyDamage);
-        }
-
-        if (Vector3.Distance(transform.position, MCposition) > EnnemyAttakrange )
-        {
-            state = State.ChaseTarget;
+            if (!coolDown)
+            {
+                coolDown = true;
+                StartCoroutine(CoolDown(collision));
+            }
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        FindMcPosition();
+       
+        Eanimator.SetFloat("speed", rb2d.velocity.x);
+
+        if (!coolDown)
+        {
+            FindMcPosition();
+        }
+
         switch (state)
         {
             default:  
             case State.idle:
-                Debug.Log("state is Chase idle");
-
-                FindMcPosition();
-
+                //Debug.Log("state is Chase idle");
+               
+                //FindMcPosition();
                 targetinrange();
 
             break;
@@ -125,16 +147,17 @@ public class ennemy_IA : MonoBehaviour
 
 
            break;
-
-            case State.attaking:
-                
-                Debug.Log("state is Chase attaking");
-
-
-                Attak();
-       
-                break;
+            
         }
+       
+    }
 
+    IEnumerator CoolDown(Collision2D collision)
+    {
+        Eanimator.SetTrigger("Attacking");
+        yield return new WaitForSeconds(1);
+        //Debug.Log("enemy hit " + collision.gameObject.name + Time.time);
+        //GetComponent<Enemy>().takeDamage(EnnemyDamage);
+        coolDown = false;
     }
 }

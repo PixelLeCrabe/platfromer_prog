@@ -6,10 +6,8 @@ public class Enemy : MonoBehaviour
 {
     public float MaxHP;
     private float CurrentHP;
-    public Animator EnemyAnimator;
 
     private bool isDead;
-    // Start is called before the first frame update
     void Start()
     {
         CurrentHP = MaxHP;
@@ -35,7 +33,6 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        EnemyAnimator.SetTrigger("isDead");
         isDead = true;
 
         GetComponent<Collider2D>().enabled = false;

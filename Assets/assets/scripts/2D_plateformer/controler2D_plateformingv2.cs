@@ -60,12 +60,15 @@ public class controler2D_plateformingv2 : MonoBehaviour
     public int extrajumpamount;
     public bool isDoubleJumping;
 
+    private HPbar hpbar;
+
     private void Awake()
     {
         Rb2d = GetComponent<Rigidbody2D>();
         extrajumps = extrajumpamount;
         state = State.Normal;
-        airRoll = airRollamount;       
+        airRoll = airRollamount;
+        hpbar = GetComponent<HPbar>();
     }
 
     // update fonctions   
@@ -149,7 +152,16 @@ public class controler2D_plateformingv2 : MonoBehaviour
             state = State.Rolling;
             RollSpeed = 10f;
             airRoll--;
+            HPbar.instance.isinvisible = true;
+            StopAllCoroutines();
+            StartCoroutine(CoroutineRoll());
         }
+    }
+
+    IEnumerator CoroutineRoll()
+    {
+        yield return new WaitForSeconds(1);
+        HPbar.instance.isinvisible = false;
     }
 
     void fallingdown()
@@ -200,7 +212,9 @@ public class controler2D_plateformingv2 : MonoBehaviour
         animator.SetTrigger("isrolling");
 
         isRollinginair = true;
-        animator.SetBool("MCisRollinginair", true);         
+        animator.SetBool("MCisRollinginair", true);    
+        
+       
     }
    
     // fixed update fonctions 
@@ -355,7 +369,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
             case State.Rolling:
                 //
                 rolling();
-         //
+                //  HPbar.instance.isinvisible = true;
                 break;
 
                 

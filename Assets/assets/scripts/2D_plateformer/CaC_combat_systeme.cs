@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CaC_combat_systeme : MonoBehaviour
 {
+    public static CaC_combat_systeme instance;
     public Animator animator;
-
     public float MCAttackDamage;
     public float MCattackRange = 0.2f;
     public Transform MCattackpoint;
@@ -23,6 +23,11 @@ public class CaC_combat_systeme : MonoBehaviour
     void OnDrawGizmoSelected()
     {
         Gizmos.DrawWireSphere(MCattackpoint.position, MCattackRange);
+    }
+
+    private void Awake()
+    {
+        instance = this;
     }
 
     void Update()

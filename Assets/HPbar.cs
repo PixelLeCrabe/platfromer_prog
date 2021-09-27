@@ -5,10 +5,13 @@ using UnityEngine.UI;
 
 public class HPbar : MonoBehaviour
 {
+    public static HPbar instance;
     public Slider slider;
     private int MaxHealt = 100;
     private int currenthealth;
     private int Damage;
+
+    public bool isinvisible = false;
 
     private void Start()
     {
@@ -16,12 +19,20 @@ public class HPbar : MonoBehaviour
         Damage = 10;
     }
 
-    public void TakeDamage()
+    private void Awake()
     {
-        currenthealth = currenthealth - Damage;
-        Debug.Log("took" + currenthealth);
+        instance = this;
     }
 
+    public void TakeDamage()
+    {
+        if (!isinvisible)
+        {
+            currenthealth = currenthealth - Damage;
+            Debug.Log("took" + currenthealth);
+
+        }
+    }
    
    
     private void Die()
