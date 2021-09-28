@@ -1,20 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Pathfinding;
 
 public class ennemy_IA : MonoBehaviour
 {
-    public Rigidbody2D rb2d;
+    Rigidbody2D rb2d;
 
     public LayerMask TargetLayerMask;
 
-    private Vector3 DistanceToMC;
-
     public Animator Eanimator;
+
+    // pathinding
+    public float nextWaypointDistance = 3f;
+
+    Path path;
+    int currentWaypoint = 0;
+    bool reachendofPath = false;
+
+    Seeker seeker;
 
     //public Transform  MCposition;
     public Vector3 MCposition;
-    public Transform MCpositioN;
+    public Transform Target;
+    private Vector3 DistanceToMC;
 
     private Vector3 EnnemyPosition;
 
@@ -43,10 +52,22 @@ public class ennemy_IA : MonoBehaviour
     void Start()
     {
         state = State.idle;
-        //rb2d = GetComponent<Rigidbody2D>();
+        rb2d = GetComponent<Rigidbody2D>();
+
+        seeker = GetComponent<Seeker>();
+
+        seeker.StartPath(rb2d.position, Target.position, OnpathComplete);
 
     }
 
+    void OnpathComplete(Path p)
+    {
+        if(!p.error)
+        {
+            path = p;
+            currentWaypoint = 0;
+        }
+    }
 
     private void FindMcPosition()
     {
@@ -72,6 +93,9 @@ public class ennemy_IA : MonoBehaviour
     private void Findthetarget()
     {
 
+
+
+
         Vector3 charecterScale = transform.localScale;
         if (Input.GetAxis("Horizontal") < 0)
         {
@@ -84,7 +108,7 @@ public class ennemy_IA : MonoBehaviour
         transform.localScale = charecterScale;
 
         Eanimator.SetTrigger("Walking");
-        
+       /* 
         // the spider copy thes scale of the MC making it face backward when the Mc run at it
         Vector3 dirction = transform.position - MCposition;
 
@@ -94,7 +118,7 @@ public class ennemy_IA : MonoBehaviour
 
         // Move in the direction of the direction vector every frame.
         transform.position += dirction * Time.deltaTime * EnnemySpeed;
-
+       */
     }
 
     //Not used cuz buged
@@ -145,11 +169,50 @@ public class ennemy_IA : MonoBehaviour
                 Findthetarget();
                 //Targetoutofrange();
 
-
            break;
             
         }
        
+      
+
+    }
+
+     void FixedUpdate()
+    {
+        switch (state)
+        {
+         case State.ChaseTarget:
+                Debug.Log("state is Chase target");
+      
+
+        if (path == null)
+            return;
+        if (currentWaypoint >= path.vectorPath.Count)
+        {
+            reachendofPath = true;
+            return;
+        }
+        else
+        {
+            reachendofPath = false;
+        }
+
+        Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb2d.position).normalized;
+
+                Vector2 force = direction * EnnemySpeed * Time.deltaTime;
+
+                rb2d.AddForce(force);
+                
+                float distance = Vector2.Distance(rb2d.position, path.vectorPath[currentWaypoint]);
+
+                if (distance < nextWaypointDistance) 
+                {
+                    currentWaypoint++;
+                }
+
+
+           break;
+        }
     }
 
     IEnumerator CoolDown(Collision2D collision)
