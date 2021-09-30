@@ -13,15 +13,18 @@ public class EnemyPathfinder : MonoBehaviour
     int currentWaypoint = 0;
     bool reachendofPath = false;
     public float speed;
-    public float attackCooldown;
+    public float AttacKCD;
     public float recalculatingDelay = 1f;
     Rigidbody2D rb2;
 
-    bool isLeft;
+    //use instade of OnColliderStay mdr...
+    private bool IsTouching;
 
     public Animator Eanimator;
 
     private bool isInCooldown;
+    public bool CanAttakCD;
+    public bool CanAttak;
 
     public Transform Target;
 
@@ -35,13 +38,12 @@ public class EnemyPathfinder : MonoBehaviour
         rb2 = GetComponent<Rigidbody2D>();
 
         seeker = GetComponent<Seeker>();
-        //InvokeRepeating("UpdatePath", 0f, 0.2f);
-        //Eanimator.SetBool("Attacking", false);
 
         seeker.StartPath(rb2.position, Target.position, OnpathComplete);
         StartCoroutine(RecalculatingPath(recalculatingDelay));
         isInCooldown = true;
         currentWaypoint = 0;
+        CanAttakCD = true;
     }
 
     private void Update()
@@ -62,21 +64,18 @@ public class EnemyPathfinder : MonoBehaviour
             //reachendofPath = false;
         }
 
-
-
-        if (rb2.velocity.x <= 0.42)
+        
+        //Flip the Ennemy
+        if (Target.localPosition.x < transform.localPosition.x) 
         {
             ennemyGRX.localScale = new Vector3(-1f, 1, 1f);
-            isLeft = true;
         }
-        if (rb2.velocity.x >= -0.20)
+        if (Target.localPosition.x > transform.localPosition.x)
         {
             ennemyGRX.localScale = new Vector3(1f, 1, 1f);
-            isLeft = false;
         }
 
-        print(rb2.velocity.x);
-        print(isLeft);
+        //print(rb2.velocity.x);
 
         Eanimator.SetFloat("Speed", rb2.velocity.x);
         if (rb2.velocity.x > 0)
@@ -90,7 +89,7 @@ public class EnemyPathfinder : MonoBehaviour
     {
         if(path != null)
         {
-            print("path n'est pas nul " + currentWaypoint);
+            //print("path n'est pas nul " + currentWaypoint);
             direction = ((Vector2)path.vectorPath[currentWaypoint] - rb2.position).normalized;
             float distance = Vector2.Distance(rb2.position, path.vectorPath[currentWaypoint]);
 
@@ -137,16 +136,6 @@ public class EnemyPathfinder : MonoBehaviour
 
     #endregion
 
-    public void Attack()
-    {
-        //speed = 0f;
-        if (!isInCooldown)
-        {
-            Eanimator.SetTrigger("Attacking");
-            isInCooldown = false;
-        }
-    }
-
     public void PlayerDistanceCheck()
     {
         //D'abord on raycast pour voir si le player est siffusamment proche pour s'arrêter
@@ -160,66 +149,39 @@ public class EnemyPathfinder : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-       
+        CanAttak = true;
 
-        //if (collision.transform.CompareTag("Player"))
-        //{
-        //if (!coolDown)
-        //{
-        //transform.localScale = new Vector3(-transform.localScale.x, 1, 1f);
-        isInCooldown = true;
-                //StopAllCoroutines();
-                //StartCoroutine(CoolDown(collision));
+        speed = 0f;
+        if (collision.transform.CompareTag("Player") && CanAttakCD == true && CanAttak == true)
+        {
+            StartCoroutine(AttackCoolDown());
+        }
 
-            //}
-
-        //}
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
         speed = 20f;
         Eanimator.SetTrigger("Walking");
-        if (rb2.velocity.x <= 0.01)
-        {
-            ennemyGRX.localScale = new Vector3(-1f, 1, 1f);
-        }
-        if (rb2.velocity.x >= -0.01)
-        {
-            ennemyGRX.localScale = new Vector3(1f, 1, 1f);
-        }
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (collision.transform.CompareTag("Player"))
-        {
-            if (!isInCooldown)
-            {
-             //transform.localScale = new Vector3(-transform.localScale.x, 1, 1f);
-                isInCooldown = true;
-             StartCoroutine(AttackCoolDown(collision));
-         
-            }
-
-        }
-    }
-    
+        CanAttak = false;
 
 
-    IEnumerator AttackCoolDown(Collision2D collision)
-    {
-        yield return new WaitForSeconds(attackCooldown);
-        isInCooldown = false;
-        //Debug.Log("enemy hit " + collision.gameObject.name + Time.time);
-        //GetComponent<Enemy>().takeDamage(EnnemyDamage);
-
-    }
+    }   
 
     IEnumerator RecalculatingPath(float delay)
     {
         yield return new WaitForSeconds(delay);
         seeker.StartPath(rb2.position, Target.position, OnpathComplete);
         StartCoroutine(RecalculatingPath(delay));
+    }
+
+    IEnumerator AttackCoolDown()
+    {
+        Eanimator.SetBool("Attackin2g",false);
+        CanAttakCD = false;
+        yield return new WaitForSeconds(AttacKCD);
+        CanAttakCD = true;
+        Eanimator.SetBool("Attackin2g",true);
+
     }
 }
