@@ -5,7 +5,6 @@ using Pathfinding;
 
 public class EnemyPathfinder : MonoBehaviour
 {
-
     // pathinding
     public float nextWaypointDistance = 5f;
 
@@ -22,10 +21,6 @@ public class EnemyPathfinder : MonoBehaviour
 
     public Animator Eanimator;
 
-    private bool isInCooldown;
-    public bool CanAttakCD;
-    public bool CanAttak;
-
     public Transform Target;
 
     public Transform ennemyGRX;
@@ -41,14 +36,12 @@ public class EnemyPathfinder : MonoBehaviour
 
         seeker.StartPath(rb2.position, Target.position, OnpathComplete);
         StartCoroutine(RecalculatingPath(recalculatingDelay));
-        isInCooldown = true;
         currentWaypoint = 0;
-        CanAttakCD = true;
+        
     }
 
     private void Update()
     {
-
         //Targetoutofrange();
         if (path == null)
             return;
@@ -74,8 +67,6 @@ public class EnemyPathfinder : MonoBehaviour
         {
             ennemyGRX.localScale = new Vector3(1f, 1, 1f);
         }
-
-        //print(rb2.velocity.x);
 
         Eanimator.SetFloat("Speed", rb2.velocity.x);
         if (rb2.velocity.x > 0)
@@ -104,7 +95,7 @@ public class EnemyPathfinder : MonoBehaviour
         rb2.velocity = force;
 
     }
-
+       
     #region PathfindingMethods
     void UpdatePath()
     {
@@ -147,25 +138,17 @@ public class EnemyPathfinder : MonoBehaviour
         //Si le player s'éloigne trop, on redémarre la speed
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private  void OnCollisionEnter2D(Collision2D collision)
     {
-        CanAttak = true;
-
-        speed = 0f;
-        if (collision.transform.CompareTag("Player") && CanAttakCD == true && CanAttak == true)
-        {
-            StartCoroutine(AttackCoolDown());
-        }
-
+        speed = 0f;     
+       
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
         speed = 20f;
         Eanimator.SetTrigger("Walking");
-        CanAttak = false;
-
-
+        Eanimator.SetBool("Attacking2", false);
     }   
 
     IEnumerator RecalculatingPath(float delay)
@@ -175,13 +158,8 @@ public class EnemyPathfinder : MonoBehaviour
         StartCoroutine(RecalculatingPath(delay));
     }
 
-    IEnumerator AttackCoolDown()
-    {
-        Eanimator.SetBool("Attackin2g",false);
-        CanAttakCD = false;
-        yield return new WaitForSeconds(AttacKCD);
-        CanAttakCD = true;
-        Eanimator.SetBool("Attackin2g",true);
+    
+   
 
-    }
 }
+

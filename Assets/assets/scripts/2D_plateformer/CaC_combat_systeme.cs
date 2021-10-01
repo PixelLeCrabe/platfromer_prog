@@ -40,7 +40,7 @@ public class CaC_combat_systeme : MonoBehaviour
                 nextAttack = Time.time + 1f / MCattackRate;
             }
         }
-        void Attack()
+          void Attack()
         {
             animator.SetTrigger("Attack");
 
