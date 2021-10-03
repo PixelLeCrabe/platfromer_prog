@@ -8,12 +8,15 @@ public class Enemy : MonoBehaviour
     private EnemyPathfinder enemyPathfinder;
     public float MaxHP;
     private float CurrentHP;
+   // Animator Eanimator;
+
 
     public bool isDead;
     void Start()
     {
         enemyPathfinder = GetComponent<EnemyPathfinder>();
         CurrentHP = MaxHP;
+       // Eanimator = transform.GetChild(0).GetComponent<Animator>();
     }
 
     public void takeDamage(float damage)
@@ -38,8 +41,8 @@ public class Enemy : MonoBehaviour
         
 
         isDead = true;
-
-        GetComponent<Collider2D>().enabled = false;
+        //Eanimator.SetBool("Isdead", true);
+        //GetComponent<Collider2D>().enabled = false;
         this.enabled = false;
         enemyPathfinder.enabled = false;
         //coroutine pour attendre d'active le setactive (false) du l'ennemy
