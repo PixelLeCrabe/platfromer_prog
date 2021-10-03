@@ -1,25 +1,22 @@
 fileFormatVersion: 2
-guid: 30c9c63301d44994db2560ebdb3288fc
+guid: 213c3a3ed83dfbb4fb52b4a3d29b0801
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5272917660322649027
-    second: spider_walk_0
+      213: -7776903292621816330
+    second: spider_dmg_0
   - first:
-      213: -7064983452712947858
-    second: spider_walk_1
+      213: -6222686280384330811
+    second: spider_dmg_1
   - first:
-      213: -4597246875688338828
-    second: spider_walk_2
+      213: 6106426072342068860
+    second: spider_dmg_2
   - first:
-      213: 31520207020265534
-    second: spider_walk_3
+      213: -2516887755818868165
+    second: spider_dmg_3
   - first:
-      213: 8720048224062660783
-    second: spider_walk_4
-  - first:
-      213: -3208373359875825323
-    second: spider_walk_5
+      213: -5450620853062413515
+    second: spider_dmg_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -141,13 +138,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: spider_walk_0
+      name: spider_dmg_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 32
-        height: 26
+        width: 29
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -155,20 +152,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d3ca5963355d2d6b0800000000000000
-      internalID: -5272917660322649027
+      spriteID: 6fdf5beb8a3e21490800000000000000
+      internalID: -7776903292621816330
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spider_walk_1
+      name: spider_dmg_1
       rect:
         serializedVersion: 2
-        x: 32
+        x: 29
         y: 0
-        width: 32
-        height: 26
+        width: 29
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -176,20 +173,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e6f280d4bf224fd90800000000000000
-      internalID: -7064983452712947858
+      spriteID: 5c3cef41cc394a9a0800000000000000
+      internalID: -6222686280384330811
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spider_walk_2
+      name: spider_dmg_2
       rect:
         serializedVersion: 2
-        x: 64
+        x: 58
         y: 0
-        width: 32
-        height: 26
+        width: 29
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -197,20 +194,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 47a72d5e25c4330c0800000000000000
-      internalID: -4597246875688338828
+      spriteID: c7ef129d8226eb450800000000000000
+      internalID: 6106426072342068860
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spider_walk_3
+      name: spider_dmg_3
       rect:
         serializedVersion: 2
-        x: 96
+        x: 87
         y: 0
-        width: 32
-        height: 26
+        width: 29
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -218,20 +215,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3090b6167bff6000800000000000000
-      internalID: 31520207020265534
+      spriteID: b32e2eecbe7321dd0800000000000000
+      internalID: -2516887755818868165
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spider_walk_4
+      name: spider_dmg_4
       rect:
         serializedVersion: 2
-        x: 128
+        x: 116
         y: 0
-        width: 32
-        height: 26
+        width: 29
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -239,29 +236,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa0e783b8a5d30970800000000000000
-      internalID: 8720048224062660783
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: spider_walk_5
-      rect:
-        serializedVersion: 2
-        x: 160
-        y: 0
-        width: 32
-        height: 26
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 55166c98d619973d0800000000000000
-      internalID: -3208373359875825323
+      spriteID: 533d0e776318b54b0800000000000000
+      internalID: -5450620853062413515
       vertices: []
       indices: 
       edges: []
@@ -269,7 +245,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: c64464b1b91cd094e8e0e61eaab9b124
+    spriteID: ac7ad9c2878c85843a00c88127a516d5
     internalID: 0
     vertices: []
     indices: 

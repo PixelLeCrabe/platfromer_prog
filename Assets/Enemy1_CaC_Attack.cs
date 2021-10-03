@@ -62,7 +62,6 @@ public class Enemy1_CaC_Attack : MonoBehaviour
     IEnumerator CoroutineAttackCoolDown()
     {
         CanAttak = false;
-        //transform.GetChild(0).GetComponent<Animator>().Play("spider_attak");
         Eanimator.SetBool("Attacking2", true);
         StartCoroutine(CoroutineAnimationAttack());
         HPbar.instance.TakeDamage();
