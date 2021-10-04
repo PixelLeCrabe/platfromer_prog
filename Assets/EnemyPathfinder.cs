@@ -14,7 +14,7 @@ public class EnemyPathfinder : MonoBehaviour
     public float speed;
     public float AttacKCD;
     public float recalculatingDelay = 1f;
-    Rigidbody2D rb2;
+    public Rigidbody2D rb2;
 
     //use instade of OnColliderStay mdr...
     private bool IsTouching;
@@ -126,17 +126,6 @@ public class EnemyPathfinder : MonoBehaviour
     }
 
     #endregion
-
-    public void PlayerDistanceCheck()
-    {
-        //D'abord on raycast pour voir si le player est siffusamment proche pour s'arrêter
-
-        //Si c'est le cas, on s'arrête
-
-        //Ensuite, on essaye d'attaquer
-
-        //Si le player s'éloigne trop, on redémarre la speed
-    }
 
     private  void OnCollisionEnter2D(Collision2D collision)
     {

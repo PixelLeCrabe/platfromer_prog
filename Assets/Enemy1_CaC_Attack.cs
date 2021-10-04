@@ -25,15 +25,8 @@ public class Enemy1_CaC_Attack : MonoBehaviour
 
     void Update()
     {
-        /*if (Time.time >= EnemyNextAttack && AbletoAttack == true)
-        {
-            EnmyAttak();
-            
-        }*/
-
         if (CanAttak && AbletoAttack)
         {
-            print(" can attack");
             StartCoroutine(CoroutineAttackCoolDown());
         }
     }

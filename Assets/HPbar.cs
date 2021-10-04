@@ -28,8 +28,6 @@ public class HPbar : MonoBehaviour
         if (!isinvisible)
         {
             currenthealth = currenthealth - Damage;
-            Debug.Log("took" + currenthealth);
-
         }
     }
    
