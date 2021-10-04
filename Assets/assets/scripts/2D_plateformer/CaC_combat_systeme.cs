@@ -44,7 +44,7 @@ public class CaC_combat_systeme : MonoBehaviour
             Collider2D[] hitEnnemy = Physics2D.OverlapCircleAll(MCattackpoint.position, MCattackRange, EnemyLayerMask);
             foreach (Collider2D enemy in hitEnnemy)
             {
-                Cinemachine_cameraShake.instance.MCAttackShake(.5f, 0.1f);
+                Cinemachine_cameraShake.instance.MCAttackShake(.5f, 0.2f);
                 enemy.GetComponent<Enemy>().takeDamage(MCAttackDamage);
             }
         }
