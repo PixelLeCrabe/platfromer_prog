@@ -129,13 +129,13 @@ public class EnemyPathfinder : MonoBehaviour
 
     private  void OnCollisionEnter2D(Collision2D collision)
     {
-        speed = 0f;     
-       
+        speed = 0f;
+        print("On collider 2d entered");
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        speed = 20f;
+        //speed = 20f;
         Eanimator.SetTrigger("Walking");
         Eanimator.SetBool("Attacking2", false);
     }   

@@ -22,6 +22,7 @@ public class ennemy_IA : MonoBehaviour
 
     //public Transform  MCposition;
     public Vector3 MCposition;
+    public Transform Spidergrx;
     public Transform Target;
     private Vector3 DistanceToMC;
 
@@ -42,6 +43,7 @@ public class ennemy_IA : MonoBehaviour
 
     private enum State
     {
+        
         ChaseTarget,
         idle,
         attaking,
@@ -93,19 +95,15 @@ public class ennemy_IA : MonoBehaviour
     private void Findthetarget()
     {
 
-
-
-
-        Vector3 charecterScale = transform.localScale;
-        if (Input.GetAxis("Horizontal") < 0)
+        // Flip the Spider
+        if (Target.localPosition.x < transform.localPosition.x)
         {
-            charecterScale.x = -1;
+            Spidergrx.localScale = new Vector3(-1f, 1, 1f);
         }
-        if (Input.GetAxis("Horizontal") > 0)
+        if (Target.localPosition.x > transform.localPosition.x)
         {
-            charecterScale.x = 1;
+            Spidergrx.localScale = new Vector3(1f, 1, 1f);
         }
-        transform.localScale = charecterScale;
 
         Eanimator.SetTrigger("Walking");
        /* 

@@ -31,36 +31,43 @@ public class CaC_animation_swap : MonoBehaviour
         {
             if ((Input.GetKeyDown(KeyCode.T) || Input.GetButtonDown("Fire2")) && !CanSecondAttak)
             {
-                CanAttakk = false;
                 //base Attak CD
-                animator.SetBool("CantfirstAttak", true);
                 StartCoroutine(coroutineBaseAttakCD());
                 //retun to base attack if there is only on input after a certain aùpount of time 
-                StartCoroutine(coroutineSecondAttakTimer());
+                //StartCoroutine(coroutineSecondAttakTimer());
                 animator.SetTrigger("baseAttack1");
                 Debug.Log("base attak 1");
                 //Wait for 2nd Attak
                 StartCoroutine(coroutineCanSecondAttak());
+                StartCoroutine(coroutinenbofinputreset());
+                CanAttakk = false;
             }
-        }
 
-        if ((Input.GetKeyDown(KeyCode.T) || Input.GetButtonDown("Fire2")) && CanSecondAttak)
-        {
-            CanAttakk = false;
-            print("Second attak");
-            //base Attak CD
-            animator.SetBool("CantfirstAttak", false);
-            animator.SetTrigger("baseAttack2");
-            StartCoroutine(coroutineCanSecondAttak());
-            StartCoroutine(coroutineBaseAttakCD());
+            if ((Input.GetKeyDown(KeyCode.T) || Input.GetButtonDown("Fire2")) && CanSecondAttak == true)
+            {
+                print("Second attak");
+                CanSecondAttak = false;
+                CanAttakk = false;
+                
+                //Manimator.SetBool("CantfirstAttak", false);
+                animator.SetTrigger("baseAttack2");
+                //StartCoroutine(coroutineCanSecondAttak());
+                //base Attak CD
+                StartCoroutine(coroutineBaseAttakCD());
+                //reset number of attack input
+                StartCoroutine(coroutinenbofinputreset());
+            }
         }
     }
     
     private void Attackinputcount()
     {
-        if (Input.GetButtonDown("Fire2") || Input.GetKeyDown(KeyCode.T))
+        if (Input.GetButtonDown("Fire2") || Input.GetKeyDown(KeyCode.T))// && CanAttakk)
         {
             nbofAttakIpunt++;
+            
+            //test reset nb of input whil in Attack CD
+            StartCoroutine(coroutinenbofinputresetInCD());
         }
     }
 
@@ -76,8 +83,15 @@ public class CaC_animation_swap : MonoBehaviour
         Attackinputcount();
         canSecondAttakCheck();
         BaseAttak();
-    }
+        if (Input.GetKeyDown(KeyCode.T))
+            {
+            print("Tpressed");
+            }
 
+        if ((Input.GetKeyDown(KeyCode.T) || Input.GetButtonDown("Fire2")) && CanSecondAttak)
+            print("cansecondattack is true");
+           
+    }
     IEnumerator coroutineSecondAttakTimer()
     {
         yield return new WaitForSeconds(SecondAttaktimer);
@@ -95,7 +109,19 @@ public class CaC_animation_swap : MonoBehaviour
     {
         yield return new WaitForSeconds(.2f);
         animator.SetBool("CantfirstAttak", false);
-        CanSecondAttak = false;
+    }
+
+    IEnumerator coroutinenbofinputreset()
+    {
+        yield return new WaitForSeconds(.5f);
         nbofAttakIpunt = 0;
-    } 
+        //test
+        CanSecondAttak = false;
+    }
+
+    IEnumerator coroutinenbofinputresetInCD()
+    {
+        yield return new WaitForSeconds(.5f);
+        nbofAttakIpunt = 0;
+    }
 }
