@@ -6,7 +6,9 @@ public class Ennemi_state_machine_ia : MonoBehaviour
 {
     public Transform Spidergrx;
     public Transform Target;
-    public Transform Raycatspoint;
+    public Transform RaycatsPoint;
+
+    public LayerMask ObstacleLayer;
 
     public Animator Eanimator;
     Rigidbody2D rb2d;
@@ -22,6 +24,8 @@ public class Ennemi_state_machine_ia : MonoBehaviour
 
     private Vector2 EnnemyMoveDir;
     private Vector2 move;
+    private Vector2 Raycastpoint;
+
     private Vector3 TargetPosition;
     private enum State
     {
@@ -37,11 +41,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     {
         state = State.idle;
         rb2d = GetComponent<Rigidbody2D>();
-
-    }
-    private void Chasetarget()
-    {
-
+        
     }
     private void FindTargetPosition()
     {
@@ -86,23 +86,30 @@ public class Ennemi_state_machine_ia : MonoBehaviour
             //rb2d.velocity = Vector2.right * EnnemySpeed * Time.deltaTime;
             //var positionOffset = (Physics2D.gravity * rb2d.gravityScale) + (new Vector2( Spidergrx.localScale.x, 0) * EnnemySpeed);
             //rb2d.MovePosition(rb2d.position + positionOffset * Time.fixedDeltaTime);
-            rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemySpeed);
-        
+            rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemySpeed);       
     }
     private void ObstacleDetected()
     {
-        RaycastHit2D hit;
-        Debug.DrawRay(new Vector2(Raycatspoint.transform.position.x, Raycatspoint.transform.position.y), new Vector2(1, 0) * 10, Color.red);
-        //if (Physics2D.Raycast(new Vector2(Raycatspoint.transform.position.x, Raycatspoint.transform.position.y), new Vector2(1, 0), out hit, 10)
+        Debug.DrawRay(new Vector2(Raycastpoint.x, Raycastpoint.y), new Vector2 (Spidergrx.localScale.x, 0 )*.2f, Color.red);
+        
+        //missing a layer mask
+        RaycastHit2D hit = Physics2D.Raycast(Raycastpoint, new Vector2 (Spidergrx.localScale.x ,0) , .2f, ObstacleLayer);
+        if (hit.collider != null)
+            {
+                print("there is an obstacle at 0.2");
+            state = State.jumping;
+        }
     }
     private void EnnemyJump()
     {
-
+        rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemySpeed);
+        rb2d.AddForce(Vector2.up * EnnemySpeed);
     }
 
 
     private void Update()
     {
+        Raycastpoint = new Vector2(RaycatsPoint.transform.position.x, RaycatsPoint.transform.position.y);
         Flipthecharacter();
         FindTargetPosition();
         ObstacleDetected();

@@ -6215,10 +6215,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Spidergrx: {fileID: 1144524500}
   Target: {fileID: 4062120977436056270}
-  Raycatspoint: {fileID: 1168174124}
+  RaycatsPoint: {fileID: 1168174124}
+  ObstacleLayer:
+    serializedVersion: 2
+    m_Bits: 512
   Eanimator: {fileID: 1742508703}
   EnnemySpeed: 15
-  Ennemydetectrange: 0
+  Ennemydetectrange: 2
 --- !u!4 &1107264411
 Transform:
   m_ObjectHideFlags: 0
@@ -6232,7 +6235,6 @@ Transform:
   m_Children:
   - {fileID: 1144524500}
   - {fileID: 893695018}
-  - {fileID: 1168174124}
   m_Father: {fileID: 0}
   m_RootOrder: 28
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6840,10 +6842,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1144524497}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.005, y: 0.003, z: 0}
+  m_LocalPosition: {x: -0.005, y: 0.05, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 98778104}
+  - {fileID: 1168174124}
   m_Father: {fileID: 1107264411}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7025,12 +7028,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1168174123}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.111, y: -0.042, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.11600006, y: -0.044999816, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1107264411}
-  m_RootOrder: 2
+  m_Father: {fileID: 1144524500}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1168967959
 GameObject:
@@ -9177,7 +9180,7 @@ PrefabInstance:
     - target: {fileID: 8803798824242790168, guid: 13c89a3f19814824eb26abd90d654178,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.404
+      value: -0.493
       objectReference: {fileID: 0}
     - target: {fileID: 8803798824242790168, guid: 13c89a3f19814824eb26abd90d654178,
         type: 3}
