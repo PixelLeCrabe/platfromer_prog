@@ -40,8 +40,7 @@ public class Spider_IA : MonoBehaviour
             Sanimator.SetTrigger("Walking");
             move.x = SpiderSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, playerPos.position, move.x);
-        }
-        
+        }        
     }
     
     void SpiderAttak ()

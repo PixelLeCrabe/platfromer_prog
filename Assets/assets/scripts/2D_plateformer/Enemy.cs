@@ -6,14 +6,18 @@ public class Enemy : MonoBehaviour
 {
 
     private EnemyPathfinder enemyPathfinder;
-    public float MaxHP;
-    public float CurrentHP;
     public Animator animatorR;
-    public bool isDead;
-    public bool hasBeenHit;
-    public GameObject HPbar;
     public static Enemy instance;
     private Collider2D collider2D;
+   
+    public GameObject HPbar;
+    
+    public float MaxHP;
+    public float CurrentHP;
+    public float EnnemySpeed;
+
+    public bool isDead;
+    public bool hasBeenHit;
    
     void Start()
     {

@@ -7,7 +7,6 @@ public class ennemy_IA : MonoBehaviour
 {
     Rigidbody2D rb2d;
 
-    public LayerMask TargetLayerMask;
 
     public Animator Eanimator;
 
@@ -31,8 +30,6 @@ public class ennemy_IA : MonoBehaviour
     public int EnnemyDamage;
     public float EnnemyAttakrange;
     public float Ennemydetectrange;
-    public Transform EnnemyAttakrangePoint;
-
     public float AttakCD;
     public bool canAttak;
 
@@ -71,11 +68,12 @@ public class ennemy_IA : MonoBehaviour
         }
     }
 
-    private void FindMcPosition()
+    
+     private void FindMcPosition()
     {
         MCposition = GameObject.FindGameObjectWithTag("Player").transform.position;       
     }
-
+    
     private void idle()
     {
         Eanimator.SetTrigger("Idle");
@@ -106,17 +104,7 @@ public class ennemy_IA : MonoBehaviour
         }
 
         Eanimator.SetTrigger("Walking");
-       /* 
-        // the spider copy thes scale of the MC making it face backward when the Mc run at it
-        Vector3 dirction = transform.position - MCposition;
-
-        // Normalize resultant vector to unit Vector.
-        dirction = -dirction.normalized;
-        dirction.y = 0;
-
-        // Move in the direction of the direction vector every frame.
-        transform.position += dirction * Time.deltaTime * EnnemySpeed;
-       */
+       
     }
 
     //Not used cuz buged
@@ -146,11 +134,12 @@ public class ennemy_IA : MonoBehaviour
        
         Eanimator.SetFloat("speed", rb2d.velocity.x);
 
+        
         if (!coolDown)
         {
             FindMcPosition();
         }
-
+        
         switch (state)
         {
             default:  
@@ -199,7 +188,8 @@ public class ennemy_IA : MonoBehaviour
 
                 Vector2 force = direction * EnnemySpeed * Time.deltaTime;
 
-                rb2d.AddForce(force);
+                rb2d.velocity = force;
+                //rb2d.AddForce(force);
                 
                 float distance = Vector2.Distance(rb2d.position, path.vectorPath[currentWaypoint]);
 

@@ -319,12 +319,6 @@ public class controler2D_plateformingv2 : MonoBehaviour
                     isdashbuttondown = true;
                 }
 
-                // dashing only on the ground
-                /*if (Input.GetKeyDown(KeyCode.Space) && isgrounded == true)
-                {
-                    isdashbuttondown = true;
-                } */
-
                 if (isgrounded == false && IsfallingDown == false && !isDoubleJumping && isRollinginair == false)
                 {
                     animator.SetBool("isGrounded", false);
