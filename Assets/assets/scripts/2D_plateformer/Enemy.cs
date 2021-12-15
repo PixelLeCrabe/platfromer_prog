@@ -7,15 +7,15 @@ public class Enemy : MonoBehaviour
 
     private EnemyPathfinder enemyPathfinder;
     public Animator animatorR;
-    public static Enemy instance;
     private Collider2D collider2D;
    
     public GameObject HPbar;
-    
+
+    public float Staggerduration;
     public float MaxHP;
     public float CurrentHP;
-    public float EnnemySpeed;
 
+    public bool isHit;
     public bool isDead;
     public bool hasBeenHit;
    
@@ -27,7 +27,7 @@ public class Enemy : MonoBehaviour
         enemyPathfinder = GetComponent<EnemyPathfinder>();
         CurrentHP = MaxHP;
         animatorR = transform.GetChild(0).GetComponent<Animator>();
-        instance = this;
+
     }
 
     public void takeDamage(float damage)
@@ -39,7 +39,8 @@ public class Enemy : MonoBehaviour
             CurrentHP -= damage;
             //animatorR.SetBool("IsDamaged", true);
             animatorR.SetTrigger("IsDamaged2");
-
+            isHit = true;
+            StartCoroutine(StaggerDuration());
             // hurt anim
 
             if (CurrentHP <= 0)
@@ -59,12 +60,11 @@ public class Enemy : MonoBehaviour
     
     public void Die()
     {
-        enemyPathfinder.rb2.velocity = new Vector2(0,0);
         isDead = true;
         animatorR.SetBool("IsDead", true);
-        collider2D.enabled = false;
+        collider2D.enabled = true;
         this.enabled = false;
-        enemyPathfinder.enabled = false;       
+        //enemyPathfinder.enabled = false;       
         //GetComponent<Enemy_HP_bar>().enabled = false;
         //coroutine pour attendre d'active le setactive (false) du l'ennemy
         //enemyPathfinder.gameObject.SetActive(false);
@@ -74,5 +74,10 @@ public class Enemy : MonoBehaviour
     private void Update()
     {
         hasbeenhit();
+    }
+    IEnumerator StaggerDuration()
+    {
+        yield return new WaitForSeconds(Staggerduration);
+        isHit = false;
     }
 }

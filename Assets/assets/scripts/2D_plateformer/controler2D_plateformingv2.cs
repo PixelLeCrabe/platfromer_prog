@@ -5,11 +5,13 @@ using UnityEngine;
 
 public class controler2D_plateformingv2 : MonoBehaviour 
 {
+    public static controler2D_plateformingv2 instance;
+    
     //public Vector3 MCposition;
 
     public Animator animator;
     public event EventHandler OnPpress;
-
+    
     private enum State
     {
         Normal,
@@ -69,11 +71,12 @@ public class controler2D_plateformingv2 : MonoBehaviour
         state = State.Normal;
         airRoll = airRollamount;
         hpbar = GetComponent<HPbar>();
+        instance = this;
     }
 
     // update fonctions   
 
-   void DoubleJumpAnimation()
+    void DoubleJumpAnimation()
     {
         if (extrajumps == 0 && !isgrounded && !IsfallingDown )
         {
@@ -102,14 +105,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
     }
     void MCjumping()
     {    
-        
-       /* if (Input.GetKeyDown(KeyCode.UpArrow) && extrajumps > 0)
-            {
-                Rb2d.velocity = Vector2.up * jumpforce;
-                extrajumps--;
-            }*/
-
-        if ((Input.GetButtonDown("Jump")|| Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps > 0)
+        if ((Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps > 0)
         {
             Rb2d.velocity = Vector2.up * jumpforce;
             extrajumps--;
@@ -117,12 +113,11 @@ public class controler2D_plateformingv2 : MonoBehaviour
        
         //Aled
     
-         if ((Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps == 0  && isgrounded == true)
+         if ((Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps == 0  && isgrounded == true)
          {
              Rb2d.velocity = Vector2.up * jumpforce;
-         }
-         
-        } // else removed
+         }        
+    } 
         
     
     void Jumpteaking()
@@ -250,7 +245,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
         {
             airRoll = airRollamount;
             extrajumps = extrajumpamount;
-            animator.SetBool("isGrounded", true);
+            //animator.SetBool("isGrounded", true);
             isDoubleJumping = false;
             animator.SetBool("DoubleJump", false);
             isRollinginair = false;
@@ -321,7 +316,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
                 if (isgrounded == false && IsfallingDown == false && !isDoubleJumping && isRollinginair == false)
                 {
-                    animator.SetBool("isGrounded", false);
+                    //animator.SetBool("isGrounded", false);
                     animator.SetBool("isJumping", true);
                 }
               
@@ -329,7 +324,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
                 // switch back to non jumping
                 if ((isgrounded == false && IsfallingDown == true) || isDoubleJumping)
                 {
-                    animator.SetBool("isGrounded", false);
+                    //animator.SetBool("isGrounded", false);
                     animator.SetBool("isJumping", false);
                 }
                 

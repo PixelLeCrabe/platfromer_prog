@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,18 +8,28 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     public Transform Spidergrx;
     public Transform Target;
     public Transform RaycatsPoint;
+    public Transform Ennemygroundcheck;
 
     public LayerMask ObstacleLayer;
 
     public Animator Eanimator;
     Rigidbody2D rb2d;
+    Collider2D Col2d;
+    private Enemy enemy;
 
     public float EnnemySpeed;
+    public float EnnemyCurrentSpeed;
     public float Ennemydetectrange;
+    public float Ennemyfallmultipliyer;
+    public float baseAttakKnockbackAmount;
+    private float Gravity;
+    private float CurrentGravity;
 
-    private bool canAttak;
-    private bool coolDown;
     private bool targetIsInrange;
+    private bool iscollidingwithMC;
+    private bool Ennemyisgrounded;
+    private bool EnemyisDead;
+
 
     private Ray2D Obstacledetection;
 
@@ -33,6 +44,10 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         idle,
         attaking,
         jumping,
+        Dead,
+        Hit,
+        Grabed,
+        LandafterThrow,
     }
 
     private State state;
@@ -41,7 +56,8 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     {
         state = State.idle;
         rb2d = GetComponent<Rigidbody2D>();
-        
+        EnnemyCurrentSpeed = EnnemySpeed;
+        enemy = GetComponent<Enemy>();
     }
     private void FindTargetPosition()
     {
@@ -62,7 +78,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     }
     private void targetinrange()
     {
-        if (Vector3.Distance(transform.position, TargetPosition) < Ennemydetectrange)
+        if (Vector3.Distance(transform.position, TargetPosition) < Ennemydetectrange && !transform.GetComponent<Enemy>().isDead && !transform.GetComponent<Enemy>().isHit)
         {
             print("target is in range");
             
@@ -80,19 +96,19 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         }
     }
     void GettoTarget()
-    {             
-            //transform.position = Vector3.MoveTowards(transform.position, TargetPosition, move.x);
+    {
+        //transform.position = Vector3.MoveTowards(transform.position, TargetPosition, move.x);
+        //rb2d.velocity = Vector2.right * EnnemySpeed * Time.deltaTime;
+        //var positionOffset = (Physics2D.gravity * rb2d.gravityScale) + (new Vector2( Spidergrx.localScale.x, 0) * EnnemySpeed);
+        //rb2d.MovePosition(rb2d.position + positionOffset * Time.fixedDeltaTime);        
 
-            //rb2d.velocity = Vector2.right * EnnemySpeed * Time.deltaTime;
-            //var positionOffset = (Physics2D.gravity * rb2d.gravityScale) + (new Vector2( Spidergrx.localScale.x, 0) * EnnemySpeed);
-            //rb2d.MovePosition(rb2d.position + positionOffset * Time.fixedDeltaTime);
-            rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemySpeed);       
+        rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemyCurrentSpeed, ForceMode2D.Impulse);     
+        
     }
     private void ObstacleDetected()
     {
         Debug.DrawRay(new Vector2(Raycastpoint.x, Raycastpoint.y), new Vector2 (Spidergrx.localScale.x, 0 )*.2f, Color.red);
         
-        //missing a layer mask
         RaycastHit2D hit = Physics2D.Raycast(Raycastpoint, new Vector2 (Spidergrx.localScale.x ,0) , .2f, ObstacleLayer);
         if (hit.collider != null)
             {
@@ -105,44 +121,124 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemySpeed);
         rb2d.AddForce(Vector2.up * EnnemySpeed);
     }
-
-
-    private void Update()
+    private void IsDead()
     {
+        if (transform.GetComponent<Enemy>().isDead)
+        {
+            print("Ennemy is Dead");
+            StartCoroutine(CoroutineWaitFordeath());
+        }
+    }
+    private void CollidingwithMC()
+    {
+        if (iscollidingwithMC == true)
+            EnnemyCurrentSpeed = 0;
+        else
+            EnnemyCurrentSpeed = EnnemySpeed;
+    } 
+    private void HitStagger()
+    {
+        Vector2 difference = transform.position - controler2D_plateformingv2.instance.transform.position;
+        difference = difference.normalized;
+        rb2d.AddForce(difference * baseAttakKnockbackAmount, ForceMode2D.Impulse);
+        
+        //rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemyCurrentSpeed, ForceMode2D.Force);
+        //rb2d.AddForce(new Vector2 (((Math.Abs(transform.position.x) + baseAttakKnockbackAmount) * Spidergrx.localScale.x), 0), ForceMode2D.Impulse);
+
+        print("stagger force applied");
+    }
+    private void isHit()
+    {
+        if (transform.GetComponent<Enemy>().isHit)
+        {
+            print("Ennemy is hit");
+            state = State.Hit;
+        }
+    }
+    private void ifGrabed()
+    {
+        Col2d.enabled = false;
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+            iscollidingwithMC = true;
+    }
+    
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+            iscollidingwithMC = false;
+    }
+    
+    private void Update()
+    {     
+        //Groundcheck
+        Ennemyisgrounded = Physics2D.OverlapCircle(Ennemygroundcheck.position, .01f, ObstacleLayer);
+
+        //obstacle check
         Raycastpoint = new Vector2(RaycatsPoint.transform.position.x, RaycatsPoint.transform.position.y);
+        
+        //Lui la c'est un fdp ya plein de boolean à gerer
+        targetinrange();
+
         Flipthecharacter();
         FindTargetPosition();
         ObstacleDetected();
+        CollidingwithMC();
 
         switch (state)
         {
             default:
             case State.idle:
-                print("state is idle");               
-                targetinrange();
-            break;
+                print("state is idle");
+                IsDead();
+                break;
 
             case State.ChaseTarget:
                 print("state is chase target");
                 GettoTarget();
                 Targetoutofrange();
-
+                IsDead();
+                isHit();
                 break;
 
             case State.jumping:
                 EnnemyJump();
                 
             break;
+
+            case State.Dead:
+                print("State is dead");
+                this.enabled = false;
+                break;
+
+            case State.Hit:
+                HitStagger();
+                IsDead();
+                print("State is Hit");
+                break;
+
+            case State.Grabed:
+                IsDead();
+                this.enabled = false;
+                break;
+
+            case State.LandafterThrow:
+
+
+                break;
         }
     }
 
     private void FixedUpdate()
-    {
+    {       
+
+            
     }
-    IEnumerator CoolDown(Collision2D collision)
+    IEnumerator CoroutineWaitFordeath()
     {
-        Eanimator.SetTrigger("Attacking");
-        yield return new WaitForSeconds(1);
-        coolDown = false;
+        yield return new WaitForSeconds(.2f);
+        state = State.Dead;
     }
 }

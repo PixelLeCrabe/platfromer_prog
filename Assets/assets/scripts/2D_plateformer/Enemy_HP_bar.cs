@@ -5,21 +5,19 @@ using UnityEngine.UI;
 
 public class Enemy_HP_bar : MonoBehaviour
 {
-    Enemy enemy;
-
     public Slider Eslider;
 
 
     public void SetmaxHP()
     {
-        Eslider.maxValue = Enemy.instance.MaxHP;
+        Eslider.maxValue = transform.GetComponent<Enemy>().MaxHP;
 
-        Eslider.value = Enemy.instance.CurrentHP;
+        Eslider.value = transform.GetComponent<Enemy>().CurrentHP;
     }
    
     public void SetHP()
     {
-        Eslider.value = Enemy.instance.CurrentHP;
+        Eslider.value = transform.GetComponent<Enemy>().CurrentHP;
     }
 
     private void Update()

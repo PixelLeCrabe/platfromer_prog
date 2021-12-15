@@ -9,6 +9,8 @@ public class HPbar : MonoBehaviour
     public Slider slider;
     private int MaxHealt = 100;
     public float currenthealth;
+    //base HP 
+    //Target HP
     public bool isinvisible = false;
     private float Damage = 10f;
 
