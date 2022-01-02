@@ -9,7 +9,7 @@ public class controller_test : MonoBehaviour
 
     public const string PLAYER_IDLE = ("idle_double_mechant");
     public const string PLAYER_WALK = ("walking_cycle_double_mechant");
-    public const string PLAYER_JUMP = ("jump");
+    public const string PLAYER_JUMP = ("Jump");
     public const string PLAYER_DOUBLEJUMP = ("MC_double_jump");
     public const string PLAYER_FALLING_DOWN = ("MC_fallingDown");
     public const string PLAYER_LANDED   = ("MC_landed");
@@ -41,15 +41,15 @@ public class controller_test : MonoBehaviour
     private Vector3 rolldirneg = new Vector3(-1, 0, 0);
     private Vector3 CurrentPostion;
 
-    private bool hasjumped;
     private bool isRollinginair;
     private bool isgrounded;
     private bool isdashbuttondown;
     private bool isDoubleJumping;
     private bool IsfallingDown;
-    private bool IsRolling;
-    private bool IsLanded;
+    private bool isRolling;
+    private bool isLanded;
     private bool CanRoll;
+    private bool hasjumped;
 
     [SerializeField] private float airRollamount;
     [SerializeField] private float RollSpeed;
@@ -96,12 +96,13 @@ public class controller_test : MonoBehaviour
 
         PlayerCurrentSpeed = moveinputX * speed * Time.deltaTime;
 
-        if (Mathf.Abs(moveinputX) < .01f && isgrounded && !IsRolling && !IsLanded) 
+        if (Mathf.Abs(moveinputX) < .01f && isgrounded && !isRolling && !isLanded && Rb2d.velocity.y < .1f) 
         {
             // Animation
             PlayerAnimationState(PLAYER_IDLE);
         }
-        else if (isgrounded && !IsfallingDown && !isRollinginair && !IsRolling && !IsLanded)
+        
+        if (Mathf.Abs(moveinputX) > .01f && isgrounded && !IsfallingDown && !isRollinginair && !isRolling && !isLanded)
         {
             PlayerAnimationState(PLAYER_WALK);
         }
@@ -113,27 +114,18 @@ public class controller_test : MonoBehaviour
         {
             Rb2d.velocity = Vector2.up * jumpforce;
             extrajumps--;
-            // Animation 
-            PlayerAnimationState(PLAYER_JUMP);
-        }
-        //Aled
-
-        if ((Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps == 0 && isgrounded)
-        {
-            Rb2d.velocity = Vector2.up * jumpforce;
-            PlayerAnimationState(PLAYER_JUMP);
         }
 
-        if (!isgrounded && !IsfallingDown && !isDoubleJumping && !isRollinginair)
+        //Animation Trigger
+        if (!isgrounded && !IsfallingDown && !isDoubleJumping && !isRollinginair && extrajumps == 1 && !isLanded)
         {
-            //animator.SetBool("isJumping", true);
-            //PlayerAnimationState(PLAYER_JUMP);
+            PlayerAnimationState(PLAYER_JUMP);
         }
     }
 
     void DoubleJumpAnimation()
     {
-        if (extrajumps == 0 && !isgrounded && !IsfallingDown && !isRollinginair)
+        if (extrajumps == 0 && !isgrounded && !IsfallingDown && !isRollinginair && !isLanded)
         {
             PlayerAnimationState(PLAYER_DOUBLEJUMP);
         }
@@ -158,7 +150,7 @@ public class controller_test : MonoBehaviour
         if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("Fire3")) && airRoll >= 0 && CanRoll)
         {
             CanRoll = false;
-            IsRolling = true;
+            isRolling = true;
             RollDir = movedir;
             state = State.Rolling;
             RollSpeed = 10f;
@@ -169,7 +161,7 @@ public class controller_test : MonoBehaviour
             StartCoroutine(CoroutineRollCD());
             StartCoroutine(CoroutineRollDelay());
 
-            if (IsRolling)
+            if (isRolling)
             {
                 PlayerAnimationState(PLAYER_ROLLING);
             }
@@ -198,12 +190,10 @@ public class controller_test : MonoBehaviour
         if (RollSpeed < rollspeedminimum)
         {
             state = State.Normal;
-            //IsRolling = false;
         }
         isRollinginair = true;
     }
 
-    // fixed update fonctions 
     private void DashPhysic()
     {
         // Missing an if() Input
@@ -236,7 +226,7 @@ public class controller_test : MonoBehaviour
     }
     void fallingdown()
     {
-        if (Rb2d.velocity.y < -0.01 && !isRollinginair && !isgrounded && !IsLanded)
+        if (Rb2d.velocity.y < -0.01 && !isRollinginair && !isgrounded && !isLanded)
         {
             IsfallingDown = true;
             PlayerAnimationState(PLAYER_FALLING_DOWN);
@@ -253,19 +243,14 @@ public class controller_test : MonoBehaviour
             hasjumped = true;
         }
     }
-
     void GroundedChecks()
     {
         if (isgrounded)
         {
             airRoll = airRollamount;
             extrajumps = extrajumpamount;
-            animator.SetBool("isGrounded", true);
             isDoubleJumping = false;
-            animator.SetBool("DoubleJump", false);
             isRollinginair = false;
-            animator.SetBool("MCisRollinginair", false);
-            animator.SetBool("isJumping", false);
         }
     }
     void MCflip()
@@ -287,7 +272,7 @@ public class controller_test : MonoBehaviour
     {
         if (collision.gameObject.tag == "Sol" && hasjumped == true)
         {
-            IsLanded = true;
+            isLanded = true;
             StartCoroutine(CoroutineLandedlDelay());
             
             // Animation
@@ -326,7 +311,7 @@ public class controller_test : MonoBehaviour
 
             case State.Rolling:
                 ExitRoll();
-                //  HPbar.instance.isinvisible = true;
+                HPbar.instance.isinvisible = true;
                 break;
         }
     }
@@ -336,8 +321,6 @@ public class controller_test : MonoBehaviour
 
         switch (state)
         {
-            //if(circleColider.isTrigger && circleColider.e )
-            //isgrounded = circleColider.isTrigger
             case State.Normal:
                 isgrounded = Physics2D.OverlapCircle(groundcheck.position, checkradius, whatisground);
 
@@ -355,7 +338,7 @@ public class controller_test : MonoBehaviour
     IEnumerator CoroutineInvisibleRollCD()
     {
         yield return new WaitForSeconds(1);
-        //HPbar.instance.isinvisible = false;
+        HPbar.instance.isinvisible = false;
     }
 
     IEnumerator CoroutineRollCD()
@@ -367,12 +350,12 @@ public class controller_test : MonoBehaviour
     IEnumerator CoroutineRollDelay()
     {
         yield return new WaitForSeconds(RollAnimationDelay);
-        IsRolling = false;
+        isRolling = false;
     }
 
     IEnumerator CoroutineLandedlDelay()
     {
         yield return new WaitForSeconds(LandedAnimationDelay);
-        IsLanded = false;
+        isLanded = false;
     }
 }
