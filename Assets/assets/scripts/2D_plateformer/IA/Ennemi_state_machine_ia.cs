@@ -15,6 +15,8 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     public Animator Eanimator;
     Rigidbody2D rb2d;
     Collider2D Col2d;
+
+    private thrown_item trhownItem;
     private Enemy enemy;
 
     public float EnnemySpeed;
@@ -22,19 +24,13 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     public float Ennemydetectrange;
     public float Ennemyfallmultipliyer;
     public float baseAttakKnockbackAmount;
-    private float Gravity;
-    private float CurrentGravity;
 
     private bool targetIsInrange;
     private bool iscollidingwithMC;
     private bool Ennemyisgrounded;
-    private bool EnemyisDead;
-
 
     private Ray2D Obstacledetection;
 
-    private Vector2 EnnemyMoveDir;
-    private Vector2 move;
     private Vector2 Raycastpoint;
 
     private Vector3 TargetPosition;
@@ -58,6 +54,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         rb2d = GetComponent<Rigidbody2D>();
         EnnemyCurrentSpeed = EnnemySpeed;
         enemy = GetComponent<Enemy>();
+        trhownItem = GetComponent<thrown_item>();
     }
     private void FindTargetPosition()
     {
@@ -101,9 +98,15 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         //rb2d.velocity = Vector2.right * EnnemySpeed * Time.deltaTime;
         //var positionOffset = (Physics2D.gravity * rb2d.gravityScale) + (new Vector2( Spidergrx.localScale.x, 0) * EnnemySpeed);
         //rb2d.MovePosition(rb2d.position + positionOffset * Time.fixedDeltaTime);        
-
-        rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemyCurrentSpeed, ForceMode2D.Impulse);     
-        
+        if (!Ennemyisgrounded) return;
+        rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemyCurrentSpeed * Time.deltaTime, ForceMode2D.Impulse);            
+    }
+    private void IsGrabed()
+    {
+        if(trhownItem.ItemIsGrabed)
+        {
+            state = State.Grabed;
+        }
     }
     private void ObstacleDetected()
     {
@@ -155,10 +158,8 @@ public class Ennemi_state_machine_ia : MonoBehaviour
             state = State.Hit;
         }
     }
-    private void ifGrabed()
-    {
-        Col2d.enabled = false;
-    }
+  
+    //Spider is colliding with MC
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Player")
@@ -172,8 +173,10 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     }
     
     private void Update()
-    {     
+    {
         //Groundcheck
+        // Need to be teawked !         /!\
+        // ground check transform position have to be y = -0.122
         Ennemyisgrounded = Physics2D.OverlapCircle(Ennemygroundcheck.position, .01f, ObstacleLayer);
 
         //obstacle check
@@ -186,6 +189,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         FindTargetPosition();
         ObstacleDetected();
         CollidingwithMC();
+        IsGrabed();
 
         switch (state)
         {
@@ -204,9 +208,8 @@ public class Ennemi_state_machine_ia : MonoBehaviour
                 break;
 
             case State.jumping:
-                EnnemyJump();
-                
-            break;
+                EnnemyJump();               
+                break;
 
             case State.Dead:
                 print("State is dead");
@@ -221,24 +224,31 @@ public class Ennemi_state_machine_ia : MonoBehaviour
 
             case State.Grabed:
                 IsDead();
-                this.enabled = false;
+                if(Grab.instance.IsHoldingAgrabedItem == false)
+                {
+                    state = State.idle;
+                    print("Get out of Grabed state");
+                }                
+                print(" Enemy State is grabed");
                 break;
 
             case State.LandafterThrow:
-
 
                 break;
         }
     }
 
     private void FixedUpdate()
-    {       
-
-            
+    {                  
     }
     IEnumerator CoroutineWaitFordeath()
     {
         yield return new WaitForSeconds(.2f);
         state = State.Dead;
+    }
+    IEnumerator CoroutineDamagedDuration()
+    {
+        yield return new WaitForSeconds(.2f);
+        print("is not damaged anymore");
     }
 }

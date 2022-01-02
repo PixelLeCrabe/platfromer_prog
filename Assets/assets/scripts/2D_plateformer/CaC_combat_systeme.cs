@@ -10,7 +10,7 @@ public class CaC_combat_systeme : MonoBehaviour
     public float MCattackRange = 0.2f;
     public Transform MCattackpoint;
     public float MCattackRate = 2f;
-     private float nextAttack = 0f;
+    private float nextAttack = 0f;
     
     public float MCSpecialAttakDammage;
     public float MCSpecialAttakrange = 0.5f;
@@ -37,13 +37,11 @@ public class CaC_combat_systeme : MonoBehaviour
         }
           void Attack()
         {
-           //camera shake
-            
             animator.SetTrigger("Attack");
-
             Collider2D[] hitEnnemy = Physics2D.OverlapCircleAll(MCattackpoint.position, MCattackRange, EnemyLayerMask);
             foreach (Collider2D enemy in hitEnnemy)
             {
+                //camera shake         
                 Cinemachine_cameraShake.instance.MCAttackShake(.5f, 0.2f);
                 enemy.GetComponent<Enemy>().takeDamage(MCAttackDamage);
             }
@@ -55,7 +53,7 @@ public class CaC_combat_systeme : MonoBehaviour
             {
                 SpecialAttak();
                 nextSpecialattak = Time.time + 1F / Specialattakrate;
-                Debug.Log("Special atttatak");
+                //Debug.Log("Special atttatak");
                }
         }
 
@@ -69,9 +67,7 @@ public class CaC_combat_systeme : MonoBehaviour
                 Debug.Log("enemy Special hit " + enemy.name);
                 Cinemachine_cameraShake.instance.MCSpecialAttackShake(1f, 0.2f);
                 enemy.GetComponent<Enemy>().takeDamage(MCSpecialAttakDammage);
-
-            }
-            
+            }            
         }
     }
 }

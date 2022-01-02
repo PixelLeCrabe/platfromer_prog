@@ -1,33 +1,41 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class controler2D_plateformingv2 : MonoBehaviour 
-{
+public class controller_test : MonoBehaviour
+{ 
+    // Animation Handler
+    public string Currentstate;
+
+    public const string PLAYER_IDLE = ("idle_double_mechant");
+    public const string PLAYER_WALK = ("walking_cycle_double_mechant");
+    public const string PLAYER_JUMP = ("jump");
+    public const string PLAYER_DOUBLEJUMP = ("MC_double_jump");
+    public const string PLAYER_FALLING_DOWN = ("MC_fallingDown");
+    public const string PLAYER_LANDED   = ("MC_landed");
+    public const string PLAYER_ROLLING = ("MC_roulade");
+
     public static controler2D_plateformingv2 instance;
-    
-    //public Vector3 MCposition;
 
     private enum State
     {
         Normal,
         Rolling,
     }
-   
-    public Animator animator;    
-   
-    public LayerMask whatisground;   
+
+    public Animator animator;
+
+    public LayerMask whatisground;
 
     private State state;
-    
+
     private HPbar hpbar;
 
     [SerializeField] private Rigidbody2D Rb2d;
-    
+
     public Transform groundcheck;
-    
-    private Vector2 movedir; 
+
+    private Vector2 movedir;
     private Vector3 RollDir;
     private Vector3 rolldirpos = new Vector3(1, 0, 0);
     private Vector3 rolldirneg = new Vector3(-1, 0, 0);
@@ -39,6 +47,8 @@ public class controler2D_plateformingv2 : MonoBehaviour
     private bool isdashbuttondown;
     private bool isDoubleJumping;
     private bool IsfallingDown;
+    private bool IsRolling;
+    private bool IsLanded;
     private bool CanRoll;
 
     [SerializeField] private float airRollamount;
@@ -50,17 +60,17 @@ public class controler2D_plateformingv2 : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private float jumpforce;
     [SerializeField] private float RollCD;
+    [SerializeField] private float AnimationDelay;
+    [SerializeField] private float RollAnimationDelay;
+    [SerializeField] private float LandedAnimationDelay;
     private float airRoll;
     private float PlayerCurrentSpeed;
     private float LastMoveDir;
     private float moveinputX;
-    private float moveinputY;
-    private float dashinput;
     private float rollspeedminimum;
 
     [SerializeField] private int extrajumpamount;
     private int extrajumps;
-
 
     private void Awake()
     {
@@ -69,59 +79,66 @@ public class controler2D_plateformingv2 : MonoBehaviour
         airRoll = airRollamount;
         hpbar = GetComponent<HPbar>();
         CanRoll = true;
-        instance = this;
+    }
+    public void PlayerAnimationState(string newState)
+    {
+        if (Currentstate == newState) return;
+
+        animator.Play(newState);
+
+        Currentstate = newState;
     }
 
-    // update fonctions   
     private void PlayerMouvement()
     {
         moveinputX = Input.GetAxis("Horizontal");
         movedir = new Vector3(moveinputX, 0);
 
         PlayerCurrentSpeed = moveinputX * speed * Time.deltaTime;
+
+        if (Mathf.Abs(moveinputX) < .01f && isgrounded && !IsRolling && !IsLanded) 
+        {
+            // Animation
+            PlayerAnimationState(PLAYER_IDLE);
+        }
+        else if (isgrounded && !IsfallingDown && !isRollinginair && !IsRolling && !IsLanded)
+        {
+            PlayerAnimationState(PLAYER_WALK);
+        }
     }
-    
-    void MCjumping()
-    {    
+
+    private void MCjumping()
+    {
         if ((Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps > 0)
         {
             Rb2d.velocity = Vector2.up * jumpforce;
             extrajumps--;
+            // Animation 
+            PlayerAnimationState(PLAYER_JUMP);
         }
-       
         //Aled
-    
-         if ((Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps == 0  && isgrounded == true)
-         {
-             Rb2d.velocity = Vector2.up * jumpforce;
-         }
-        
-        if (!isgrounded && !IsfallingDown && !isDoubleJumping && isRollinginair == false)
+
+        if ((Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps == 0 && isgrounded)
         {
-            //animator.SetBool("isGrounded", false);
-            animator.SetBool("isJumping", true);
-        }
-        if ((isgrounded == false && IsfallingDown == true) || isDoubleJumping)
-        {
-            //animator.SetBool("isGrounded", false);
-            animator.SetBool("isJumping", false);
-        }
-    }     
-    
-    void DoubleJumpAnimation()
-    {
-        if (extrajumps == 0 && !isgrounded && !IsfallingDown )
-        {
-            isDoubleJumping = true; 
+            Rb2d.velocity = Vector2.up * jumpforce;
+            PlayerAnimationState(PLAYER_JUMP);
         }
 
-        if (isDoubleJumping == true)
+        if (!isgrounded && !IsfallingDown && !isDoubleJumping && !isRollinginair)
         {
-            animator.SetTrigger("DoubleJump");
+            //animator.SetBool("isJumping", true);
+            //PlayerAnimationState(PLAYER_JUMP);
         }
-        
     }
-   
+
+    void DoubleJumpAnimation()
+    {
+        if (extrajumps == 0 && !isgrounded && !IsfallingDown && !isRollinginair)
+        {
+            PlayerAnimationState(PLAYER_DOUBLEJUMP);
+        }
+    }
+
     void Jumpteaking()
     {
         //Jump tweaking (gravitu modifier)
@@ -138,18 +155,24 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
     void Roll()
     {
-        //put a small CD on the roll
         if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("Fire3")) && airRoll >= 0 && CanRoll)
         {
             CanRoll = false;
+            IsRolling = true;
             RollDir = movedir;
             state = State.Rolling;
             RollSpeed = 10f;
             airRoll--;
-            HPbar.instance.isinvisible = true;
+            //HPbar.instance.isinvisible = true;
             StopAllCoroutines();
             StartCoroutine(CoroutineInvisibleRollCD());
             StartCoroutine(CoroutineRollCD());
+            StartCoroutine(CoroutineRollDelay());
+
+            if (IsRolling)
+            {
+                PlayerAnimationState(PLAYER_ROLLING);
+            }
         }
 
         if (moveinputX == 0)
@@ -175,14 +198,11 @@ public class controler2D_plateformingv2 : MonoBehaviour
         if (RollSpeed < rollspeedminimum)
         {
             state = State.Normal;
+            //IsRolling = false;
         }
-
-        animator.SetTrigger("isrolling");
-
         isRollinginair = true;
-        animator.SetBool("MCisRollinginair", true);
     }
-  
+
     // fixed update fonctions 
     private void DashPhysic()
     {
@@ -207,7 +227,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
         {
             isdashbuttondown = true;
         }
-        
+
         // Dash dir if Player is moving
         if (moveinputX != 0)
         {
@@ -216,18 +236,14 @@ public class controler2D_plateformingv2 : MonoBehaviour
     }
     void fallingdown()
     {
-        if (Rb2d.velocity.y < -0.01 && isRollinginair == false)
+        if (Rb2d.velocity.y < -0.01 && !isRollinginair && !isgrounded && !IsLanded)
         {
             IsfallingDown = true;
+            PlayerAnimationState(PLAYER_FALLING_DOWN);
         }
         else
         {
             IsfallingDown = false;
-        }
-
-        if (IsfallingDown == true)
-        {
-            animator.SetTrigger("FallingDown");
         }
     }
     void Mchasjumpedonce()
@@ -240,11 +256,11 @@ public class controler2D_plateformingv2 : MonoBehaviour
 
     void GroundedChecks()
     {
-        if (isgrounded == true)
+        if (isgrounded)
         {
             airRoll = airRollamount;
             extrajumps = extrajumpamount;
-            //animator.SetBool("isGrounded", true);
+            animator.SetBool("isGrounded", true);
             isDoubleJumping = false;
             animator.SetBool("DoubleJump", false);
             isRollinginair = false;
@@ -270,20 +286,26 @@ public class controler2D_plateformingv2 : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Sol" && hasjumped == true)
-        {          
-            //animator.SetBool("islanded",true);
-            GetComponent<Animator>().Play("MC_landed");
+        {
+            IsLanded = true;
+            StartCoroutine(CoroutineLandedlDelay());
+            
+            // Animation
+            PlayerAnimationState(PLAYER_LANDED);
         }
     }
 
     void Update()
     {
+        // Animation delay getting the animator timing
+        //AnimationDelay = animator.GetCurrentAnimatorStateInfo(0).length - .1f;
+
         switch (state)
         {
             case State.Normal:
-               
-                PlayerMouvement();            
-                                                           
+
+                PlayerMouvement();
+
                 MCjumping();
 
                 Jumpteaking();
@@ -291,27 +313,24 @@ public class controler2D_plateformingv2 : MonoBehaviour
                 DoubleJumpAnimation();
 
                 Roll();
-              
+
                 DashLogic();
-              
+
                 fallingdown();
 
                 MCflip();
                 Mchasjumpedonce();
                 GroundedChecks();
-               
-                // Assing Player velocity to animator
-                animator.SetFloat("Player_Speed", Mathf.Abs(moveinputX));
 
                 break;
- 
+
             case State.Rolling:
                 ExitRoll();
                 //  HPbar.instance.isinvisible = true;
-                break;              
+                break;
         }
     }
-     
+
     void FixedUpdate()
     {
 
@@ -321,7 +340,7 @@ public class controler2D_plateformingv2 : MonoBehaviour
             //isgrounded = circleColider.isTrigger
             case State.Normal:
                 isgrounded = Physics2D.OverlapCircle(groundcheck.position, checkradius, whatisground);
-                
+
                 //Player movement
                 Rb2d.velocity = new Vector2(PlayerCurrentSpeed, Rb2d.velocity.y);
 
@@ -329,19 +348,31 @@ public class controler2D_plateformingv2 : MonoBehaviour
                 break;
             case State.Rolling:
                 Rb2d.velocity = RollDir * RollSpeed;
-               
+
                 break;
-        }       
+        }
     }
     IEnumerator CoroutineInvisibleRollCD()
     {
         yield return new WaitForSeconds(1);
-        HPbar.instance.isinvisible = false;
+        //HPbar.instance.isinvisible = false;
     }
 
     IEnumerator CoroutineRollCD()
     {
         yield return new WaitForSeconds(RollCD);
         CanRoll = true;
+    }
+
+    IEnumerator CoroutineRollDelay()
+    {
+        yield return new WaitForSeconds(RollAnimationDelay);
+        IsRolling = false;
+    }
+
+    IEnumerator CoroutineLandedlDelay()
+    {
+        yield return new WaitForSeconds(LandedAnimationDelay);
+        IsLanded = false;
     }
 }

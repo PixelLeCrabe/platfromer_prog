@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-
-    private EnemyPathfinder enemyPathfinder;
     public Animator animatorR;
+   
     private Collider2D collider2D;
    
     public GameObject HPbar;
 
-    public float Staggerduration;
+    [SerializeField] public float Staggerduration;
     public float MaxHP;
     public float CurrentHP;
 
@@ -24,10 +23,8 @@ public class Enemy : MonoBehaviour
         hasBeenHit = false;
         HPbar.SetActive(false);
         collider2D = GetComponent<Collider2D>();
-        enemyPathfinder = GetComponent<EnemyPathfinder>();
         CurrentHP = MaxHP;
         animatorR = transform.GetChild(0).GetComponent<Animator>();
-
     }
 
     public void takeDamage(float damage)
@@ -37,8 +34,6 @@ public class Enemy : MonoBehaviour
         {
             hasBeenHit = true;
             CurrentHP -= damage;
-            //animatorR.SetBool("IsDamaged", true);
-            animatorR.SetTrigger("IsDamaged2");
             isHit = true;
             StartCoroutine(StaggerDuration());
             // hurt anim
@@ -48,7 +43,6 @@ public class Enemy : MonoBehaviour
                 Die();
             }
         }
-
     }
     public void hasbeenhit()
     {

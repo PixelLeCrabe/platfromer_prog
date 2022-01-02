@@ -55,7 +55,7 @@ public class Enemy1_CaC_Attack : MonoBehaviour
     IEnumerator CoroutineAttackCoolDown()
     {
         CanAttak = false;
-        Eanimator.SetBool("Attacking2", true);
+        Eanimator.SetBool("Attacking", true);
         StartCoroutine(CoroutineAnimationAttack());
         HPbar.instance.TakeDamage();
         print("has attack");
@@ -68,7 +68,6 @@ public class Enemy1_CaC_Attack : MonoBehaviour
     IEnumerator CoroutineAnimationAttack()
     {
         yield return new WaitForSeconds(0.5f);
-        Eanimator.SetBool("Attacking2", false);
+        Eanimator.SetBool("Attacking", false);
     }
-
 }

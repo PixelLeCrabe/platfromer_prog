@@ -6,23 +6,23 @@ using UnityEngine;
 public class Grab : MonoBehaviour
 {
     public static Grab instance;
+    
     public Transform Holdpoint;
     public Transform RayCatsPoint;
     public Transform MC;
 
     private Collider2D GrabbedItemCollider;
 
-
     private Rigidbody2D GrabbedItem;
-
-    public LayerMask GrabbableEnemy;
     public LayerMask GrabbableItem;
 
     private RaycastHit2D ray;
 
+    public string GrabedItemName;
+
+    public bool IsHoldingAgrabedItem;
     private bool CanGrab;
     private bool Grabbing;
-    private bool IsHoldingAgrabedItem;
     private bool CanRelease;
     private bool IsReleasingAnItem;
 
@@ -50,24 +50,27 @@ public class Grab : MonoBehaviour
         Debug.DrawRay(new Vector2(RayCatsPoint.position.x, RayCatsPoint.position.y), new Vector2(MC.localScale.x, 0) * Grabrange, Color.red);
 
         if (Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Grab"))
-
-
         {                 
             if (ray.collider != null && !Grabbing)
             {
                 CanRelease = false;
                 Grabbing = true;
                 IsHoldingAgrabedItem = true;
+                
                 // TP the Gameobject
                 GrabedItemGravityAmount = ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale;
                 ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale =0;
                 GrabbedItem = ray.collider.gameObject.GetComponent<Rigidbody2D>();
+                
+                // Test : Identify the grabed item by his name 
+                GrabedItemName = ray.collider.gameObject.name;
+
                 //testing can enable or disable collider here to Grab closer to the MC //  Give him back on release !
                 GrabbedItemCollider = ray.collider.gameObject.GetComponent<Collider2D>();
                 ray.collider.gameObject.GetComponent<Collider2D>().enabled = false;
                 nbofgrabInput++;
                 StartCoroutine(CoroutineRelease());
-                print(" Object is grabbed");               
+                Debug.Log(gameObject.name + " is grabbed");               
             }
             /*else
                 Grabbing = false;*/
