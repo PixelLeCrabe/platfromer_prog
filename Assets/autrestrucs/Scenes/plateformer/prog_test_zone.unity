@@ -4928,7 +4928,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0.04699993, y: 0.065999985}
   m_SizeDelta: {x: -1.3246098, y: -1.5873871}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -12363,10 +12363,10 @@ RectTransform:
   m_Father: {fileID: 1906061347}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -257, y: 158}
-  m_SizeDelta: {x: 89.97194, y: 14.409256}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 68.3, y: -30}
+  m_SizeDelta: {x: 89.971924, y: 14.409256}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1769476121
 MonoBehaviour:
@@ -12721,7 +12721,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -12740,8 +12740,8 @@ Canvas:
   m_GameObject: {fileID: 1906061343}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 1243222891}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -13861,7 +13861,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -1.68, y: 0.63}
+  m_AnchoredPosition: {x: -1.6799927, y: 0.62999725}
   m_SizeDelta: {x: 3.3691483, y: -1.2545185}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2036305324
@@ -14343,7 +14343,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2072995705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14421,11 +14421,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   Eanimator: {fileID: 1742508703}
-  EnnemySpeed: 0.12
+  EnnemySpeed: 0.1
   EnnemyCurrentSpeed: 0
   Ennemydetectrange: 2
   Ennemyfallmultipliyer: 1.5
-  baseAttakKnockbackAmount: 0.5
+  baseAttakKnockbackAmount: 0.3
 --- !u!50 &2072995709
 Rigidbody2D:
   serializedVersion: 4
@@ -14438,9 +14438,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 5
-  m_LinearDrag: 10
-  m_AngularDrag: 8
+  m_Mass: 8
+  m_LinearDrag: 3
+  m_AngularDrag: 4
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 1
