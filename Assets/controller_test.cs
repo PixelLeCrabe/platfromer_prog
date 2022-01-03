@@ -6,7 +6,7 @@ public class controller_test : MonoBehaviour
 { 
     // Animation Handler
     public string Currentstate;
-
+/*
     public const string PLAYER_IDLE = ("idle_double_mechant");
     public const string PLAYER_WALK = ("walking_cycle_double_mechant");
     public const string PLAYER_JUMP = ("Jump");
@@ -14,7 +14,14 @@ public class controller_test : MonoBehaviour
     public const string PLAYER_FALLING_DOWN = ("MC_fallingDown");
     public const string PLAYER_LANDED   = ("MC_landed");
     public const string PLAYER_ROLLING = ("MC_roulade");
-
+*/
+    public const string PLAYER_IDLE = ("King_idle");
+    public const string PLAYER_WALK = ("King_Walk");
+    public const string PLAYER_JUMP = ("King_jump1");
+    public const string PLAYER_DOUBLEJUMP = ("King_jump2");
+    public const string PLAYER_FALLING_DOWN = ("King_FallingDown");
+    public const string PLAYER_LANDED = ("King_Landed");
+    public const string PLAYER_ROLLING = ("King_Roll");
     public static controler2D_plateformingv2 instance;
 
     private enum State
@@ -30,6 +37,8 @@ public class controller_test : MonoBehaviour
     private State state;
 
     private HPbar hpbar;
+
+    private CaC_combat_systeme Combat_Systeme;
 
     [SerializeField] private Rigidbody2D Rb2d;
 
@@ -74,6 +83,7 @@ public class controller_test : MonoBehaviour
 
     private void Awake()
     {
+        Combat_Systeme = GetComponent<CaC_combat_systeme>();
         extrajumps = extrajumpamount;
         state = State.Normal;
         airRoll = airRollamount;
@@ -96,13 +106,13 @@ public class controller_test : MonoBehaviour
 
         PlayerCurrentSpeed = moveinputX * speed * Time.deltaTime;
 
-        if (Mathf.Abs(moveinputX) < .01f && isgrounded && !isRolling && !isLanded && Rb2d.velocity.y < .1f) 
+        if (Mathf.Abs(moveinputX) < .01f && isgrounded && !isRolling && !isLanded && Rb2d.velocity.y < .1f && !Combat_Systeme.isAttacking && !Combat_Systeme.isSpecialAttacking) 
         {
             // Animation
             PlayerAnimationState(PLAYER_IDLE);
         }
         
-        if (Mathf.Abs(moveinputX) > .01f && isgrounded && !IsfallingDown && !isRollinginair && !isRolling && !isLanded)
+        if (Mathf.Abs(moveinputX) > .01f && isgrounded && !IsfallingDown && !isRollinginair && !isRolling && !isLanded && !Combat_Systeme.isAttacking && !Combat_Systeme.isSpecialAttacking)
         {
             PlayerAnimationState(PLAYER_WALK);
         }
