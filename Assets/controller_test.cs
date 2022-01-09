@@ -19,7 +19,7 @@ public class controller_test : MonoBehaviour
     public const string PLAYER_WALK = ("King_Walk");
     public const string PLAYER_JUMP = ("King_jump1");
     public const string PLAYER_DOUBLEJUMP = ("King_jump2");
-    public const string PLAYER_FALLING_DOWN = ("King_FallingDown");
+    public const string PLAYER_FALLING_DOWN = ("King_FallingDown2");
     public const string PLAYER_LANDED = ("King_Landed");
     public const string PLAYER_ROLLING = ("King_Roll");
     public static controler2D_plateformingv2 instance;
