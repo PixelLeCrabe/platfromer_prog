@@ -21,13 +21,17 @@ public class controller_test : MonoBehaviour
     public const string PLAYER_DOUBLEJUMP = ("King_jump2");
     public const string PLAYER_FALLING_DOWN = ("King_FallingDown2");
     public const string PLAYER_LANDED = ("King_Landed");
-    public const string PLAYER_ROLLING = ("King_Roll");
+    public const string PLAYER_ROLLING = ("King_Roll2");
+    public const string PLAYER_HOLDING = ("King_Hold");
+    public const string PLAYER_HOLDINGWALK = ("King_HoldWalk");
+
     public static controler2D_plateformingv2 instance;
 
     private enum State
     {
         Normal,
         Rolling,
+        Grabing,
     }
 
     public Animator animator;
@@ -39,7 +43,8 @@ public class controller_test : MonoBehaviour
     private HPbar hpbar;
 
     private CaC_combat_systeme Combat_Systeme;
-
+    private Grab grab;
+    
     [SerializeField] private Rigidbody2D Rb2d;
 
     public Transform groundcheck;
@@ -72,11 +77,12 @@ public class controller_test : MonoBehaviour
     [SerializeField] private float AnimationDelay;
     [SerializeField] private float RollAnimationDelay;
     [SerializeField] private float LandedAnimationDelay;
+    [SerializeField] private float rollspeedminimum;
     private float airRoll;
     private float PlayerCurrentSpeed;
+    private float PlayerGrabbingSpeed;
     private float LastMoveDir;
     private float moveinputX;
-    private float rollspeedminimum;
 
     [SerializeField] private int extrajumpamount;
     private int extrajumps;
@@ -84,6 +90,7 @@ public class controller_test : MonoBehaviour
     private void Awake()
     {
         Combat_Systeme = GetComponent<CaC_combat_systeme>();
+        grab = GetComponent<Grab>();
         extrajumps = extrajumpamount;
         state = State.Normal;
         airRoll = airRollamount;
@@ -105,6 +112,7 @@ public class controller_test : MonoBehaviour
         movedir = new Vector3(moveinputX, 0);
 
         PlayerCurrentSpeed = moveinputX * speed * Time.deltaTime;
+        PlayerGrabbingSpeed = moveinputX * (speed /2)* Time.deltaTime;
 
         if (Mathf.Abs(moveinputX) < .01f && isgrounded && !isRolling && !isLanded && Rb2d.velocity.y < .1f && !Combat_Systeme.isAttacking && !Combat_Systeme.isSpecialAttacking) 
         {
@@ -118,6 +126,24 @@ public class controller_test : MonoBehaviour
         }
     }
 
+    private void PlayerGrabbingMouvement()
+    {
+        moveinputX = Input.GetAxis("Horizontal");
+        movedir = new Vector3(moveinputX, 0);
+
+        PlayerGrabbingSpeed = moveinputX * (speed / 2) * Time.deltaTime;
+
+        if (Mathf.Abs(moveinputX) < .01f && isgrounded && !grab.Grabbing && !Combat_Systeme.isAttacking && !Combat_Systeme.isSpecialAttacking)
+        {
+            // Animation
+            PlayerAnimationState(PLAYER_HOLDING);
+        }
+
+        if (Mathf.Abs(moveinputX) > .01f && isgrounded && !IsfallingDown && !isRollinginair && !isRolling && !isLanded && !Combat_Systeme.isAttacking && !Combat_Systeme.isSpecialAttacking)
+        {
+            PlayerAnimationState(PLAYER_HOLDINGWALK);
+        }
+    }
     private void MCjumping()
     {
         if ((Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.UpArrow)) && extrajumps > 0)
@@ -196,7 +222,7 @@ public class controller_test : MonoBehaviour
         float rollspeeddropmultiplier = 3;
         RollSpeed -= RollSpeed * rollspeeddropmultiplier * Time.deltaTime;
 
-        float rollspeedminimum = 7f;
+        
         if (RollSpeed < rollspeedminimum)
         {
             state = State.Normal;
@@ -233,6 +259,13 @@ public class controller_test : MonoBehaviour
         {
             LastMoveDir = moveinputX;
         }
+    }
+    private void Grabbing()
+    {
+        if(grab.IsHoldingAgrabedItem)
+        {
+            state = State.Grabing;
+        }            
     }
     void fallingdown()
     {
@@ -313,6 +346,7 @@ public class controller_test : MonoBehaviour
 
                 fallingdown();
 
+                Grabbing();
                 MCflip();
                 Mchasjumpedonce();
                 GroundedChecks();
@@ -322,6 +356,17 @@ public class controller_test : MonoBehaviour
             case State.Rolling:
                 ExitRoll();
                 HPbar.instance.isinvisible = true;
+                break;
+
+            case State.Grabing:
+                PlayerGrabbingMouvement();
+                MCflip();
+                
+                // GEt out of the sate 
+                if (!grab.IsHoldingAgrabedItem)
+                {
+                    state = State.Normal;
+                }
                 break;
         }
     }
@@ -339,9 +384,14 @@ public class controller_test : MonoBehaviour
 
                 DashPhysic();
                 break;
+            
             case State.Rolling:
                 Rb2d.velocity = RollDir * RollSpeed;
+                break;
 
+            case State.Grabing:
+                //Player movement
+                Rb2d.velocity = new Vector2(PlayerGrabbingSpeed, Rb2d.velocity.y);
                 break;
         }
     }

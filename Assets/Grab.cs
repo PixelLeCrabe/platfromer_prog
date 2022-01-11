@@ -6,14 +6,18 @@ using UnityEngine;
 public class Grab : MonoBehaviour
 {
     public static Grab instance;
-    
+
+    public Animator animator;
     public Transform Holdpoint;
     public Transform RayCatsPoint;
     public Transform MC;
 
+    private controller_test Controller_Test;
+
     private Collider2D GrabbedItemCollider;
 
     private Rigidbody2D GrabbedItem;
+ 
     public LayerMask GrabbableItem;
 
     private RaycastHit2D ray;
@@ -21,17 +25,20 @@ public class Grab : MonoBehaviour
     public string GrabedItemName;
 
     public bool IsHoldingAgrabedItem;
+    public bool Grabbing;
     private bool CanGrab;
-    private bool Grabbing;
     private bool CanRelease;
-    private bool IsReleasingAnItem;
-
 
     public float Grabrange;
     [SerializeField] private float ThrowStrenght;
+    [SerializeField] private float GrabTriggerDelay;
     private float nbofgrabInput;
     private float GrabedItemGravityAmount;
-    private float HoldMaxTime;
+    private float HoldMaxTime;  
+    
+    public const string PLAYER_GRABING = ("King_Grab");
+    public const string PLAYER_THROWING = ("King_Throw");
+    public const string PLAYER_REALESING = ("King_Release");   
 
     private void Awake()
     {
@@ -39,6 +46,7 @@ public class Grab : MonoBehaviour
     }
     void Start()
     {
+        Controller_Test = GetComponent<controller_test>();
         nbofgrabInput = 0;
         CanRelease = false;
         nbofgrabInput = 0;
@@ -50,38 +58,40 @@ public class Grab : MonoBehaviour
         Debug.DrawRay(new Vector2(RayCatsPoint.position.x, RayCatsPoint.position.y), new Vector2(MC.localScale.x, 0) * Grabrange, Color.red);
 
         if (Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Grab"))
-        {                 
-            if (ray.collider != null && !Grabbing)
+        {                                
+               // Animation
+            Controller_Test.PlayerAnimationState(PLAYER_GRABING); // need to change animation State cuz its looping atm            
+
+            if (ray.collider != null && !IsHoldingAgrabedItem)
             {
                 CanRelease = false;
                 Grabbing = true;
                 IsHoldingAgrabedItem = true;
-                
+
                 // TP the Gameobject
-                GrabedItemGravityAmount = ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale;
-                ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale =0;
-                GrabbedItem = ray.collider.gameObject.GetComponent<Rigidbody2D>();
-                
+                 GrabedItemGravityAmount = ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale;
+                 ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+                 GrabbedItem = ray.collider.gameObject.GetComponent<Rigidbody2D>();
+
                 // Test : Identify the grabed item by his name 
-                GrabedItemName = ray.collider.gameObject.name;
+                 GrabedItemName = ray.collider.gameObject.name;
 
                 //testing can enable or disable collider here to Grab closer to the MC //  Give him back on release !
                 GrabbedItemCollider = ray.collider.gameObject.GetComponent<Collider2D>();
                 ray.collider.gameObject.GetComponent<Collider2D>().enabled = false;
                 nbofgrabInput++;
+
+                StartCoroutine(CoroutinereTriggerDelay());
                 StartCoroutine(CoroutineRelease());
                 Debug.Log(gameObject.name + " is grabbed");               
             }
-            /*else
-                Grabbing = false;*/
         }
     }
 
     private void ReleaseItem2()
     {
-        if ((Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Grab")) && CanRelease && Grabbing)
-        {
-            //IsHoldingAgrabedItem = false;
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Grab")) && CanRelease && IsHoldingAgrabedItem)
+        {         
             print("Grabbing"); 
             // Throw right
             if (Input.GetAxis("Horizontal") > 0)
@@ -90,6 +100,9 @@ public class Grab : MonoBehaviour
                 GrabbedItem.AddForce(new Vector2(1, 0.1f) * ThrowStrenght, ForceMode2D.Impulse);
                 GrabbedItem.gravityScale = GrabedItemGravityAmount;
                 print(" Throw Item Right");
+
+                // Animation
+                //Controller_Test.PlayerAnimationState(PLAYER_THROWING);
             }
 
             // Throw left
@@ -99,6 +112,9 @@ public class Grab : MonoBehaviour
                 GrabbedItem.AddForce(new Vector2(-1, 0.1f) * ThrowStrenght, ForceMode2D.Impulse);
                 GrabbedItem.gravityScale = GrabedItemGravityAmount;
                 print(" Throw Item left");
+
+                // Animation
+                //Controller_Test.PlayerAnimationState(PLAYER_THROWING);
             }
 
             else
@@ -106,10 +122,13 @@ public class Grab : MonoBehaviour
                 IsHoldingAgrabedItem = false;
                 GrabbedItem.gravityScale = GrabedItemGravityAmount;
                 print("releasing an item with W");
+
+                // Animation
+                //Controller_Test.PlayerAnimationState(PLAYER_REALESING);
             }
 
             //aled
-            
+
             // Throw up
             if (Input.GetAxis("Vertical") > 0.1)
             {
@@ -117,6 +136,9 @@ public class Grab : MonoBehaviour
                 GrabbedItem.AddForce(new Vector2(0, 1) * ThrowStrenght, ForceMode2D.Impulse);
                 GrabbedItem.gravityScale = GrabedItemGravityAmount;
                 print(" Throw Item up");
+
+                // Animation
+                //Controller_Test.PlayerAnimationState(PLAYER_THROWING);
             }
            
                 // Throw Down
@@ -126,6 +148,9 @@ public class Grab : MonoBehaviour
                 GrabbedItem.AddForce(new Vector2(0, -1) * ThrowStrenght, ForceMode2D.Impulse);
                 GrabbedItem.gravityScale = GrabedItemGravityAmount;
                 print(" Throw Item Down");
+
+                // Animation
+                //Controller_Test.PlayerAnimationState(PLAYER_THROWING); 
             }
            
             // Enable grabed item collider not use, could be useful
@@ -170,5 +195,11 @@ public class Grab : MonoBehaviour
     {
         yield return new WaitForSeconds(.1f);
         GrabbedItemCollider.enabled = true;       
+    }
+
+    IEnumerator CoroutinereTriggerDelay()
+    {
+        yield return new WaitForSeconds(GrabTriggerDelay);
+        Grabbing = false;
     }
 }
