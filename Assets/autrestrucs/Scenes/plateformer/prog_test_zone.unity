@@ -2516,6 +2516,7 @@ MonoBehaviour:
   Grabrange: 0.1
   ThrowStrenght: 40
   GrabTriggerDelay: 0.4
+  GrabAnimation: 0.5
 --- !u!212 &351412626
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16108,6 +16109,7 @@ MonoBehaviour:
   Grabrange: 0.1
   ThrowStrenght: 40
   GrabTriggerDelay: 0
+  GrabAnimation: 0
 --- !u!1001 &4255209398167333944
 PrefabInstance:
   m_ObjectHideFlags: 0

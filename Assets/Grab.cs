@@ -28,17 +28,19 @@ public class Grab : MonoBehaviour
     public bool Grabbing;
     private bool CanGrab;
     private bool CanRelease;
+    public bool GrabAnim;
 
     public float Grabrange;
     [SerializeField] private float ThrowStrenght;
     [SerializeField] private float GrabTriggerDelay;
+    [SerializeField] private float GrabAnimation;
     private float nbofgrabInput;
     private float GrabedItemGravityAmount;
     private float HoldMaxTime;  
     
     public const string PLAYER_GRABING = ("King_Grab");
     public const string PLAYER_THROWING = ("King_Throw");
-    public const string PLAYER_REALESING = ("King_Release");   
+    public const string PLAYER_REALESING = ("King_Release");
 
     private void Awake()
     {
@@ -58,9 +60,9 @@ public class Grab : MonoBehaviour
         Debug.DrawRay(new Vector2(RayCatsPoint.position.x, RayCatsPoint.position.y), new Vector2(MC.localScale.x, 0) * Grabrange, Color.red);
 
         if (Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Grab"))
-        {                                
-               // Animation
-            Controller_Test.PlayerAnimationState(PLAYER_GRABING); // need to change animation State cuz its looping atm            
+        {     
+            GrabAnim = true;
+            StartCoroutine(CoroutineGrabAnimation());
 
             if (ray.collider != null && !IsHoldingAgrabedItem)
             {
@@ -165,7 +167,6 @@ public class Grab : MonoBehaviour
             GrabbedItem.position = Holdpoint.position;
         }
     }
-
     void Update()
     {
         Grabbleobject();
@@ -201,5 +202,10 @@ public class Grab : MonoBehaviour
     {
         yield return new WaitForSeconds(GrabTriggerDelay);
         Grabbing = false;
+    }
+    IEnumerator CoroutineGrabAnimation()
+    {
+        yield return new WaitForSeconds(GrabAnimation);
+        GrabAnim = false;
     }
 }

@@ -24,8 +24,9 @@ public class controller_test : MonoBehaviour
     public const string PLAYER_ROLLING = ("King_Roll2");
     public const string PLAYER_HOLDING = ("King_Hold");
     public const string PLAYER_HOLDINGWALK = ("King_HoldWalk");
-
-    public static controler2D_plateformingv2 instance;
+    public const string PLAYER_GRABING = ("King_Grab");
+    public const string PLAYER_THROWING = ("King_Throw");
+    public const string PLAYER_REALESING = ("King_Release");
 
     private enum State
     {
@@ -114,15 +115,19 @@ public class controller_test : MonoBehaviour
         PlayerCurrentSpeed = moveinputX * speed * Time.deltaTime;
         PlayerGrabbingSpeed = moveinputX * (speed /2)* Time.deltaTime;
 
-        if (Mathf.Abs(moveinputX) < .01f && isgrounded && !isRolling && !isLanded && Rb2d.velocity.y < .1f && !Combat_Systeme.isAttacking && !Combat_Systeme.isSpecialAttacking) 
+        if (Mathf.Abs(moveinputX) < .01f && isgrounded && !isRolling && !isLanded && Rb2d.velocity.y < .1f && !Combat_Systeme.isAttacking && !Combat_Systeme.isSpecialAttacking && !grab.GrabAnim) 
         {
             // Animation
             PlayerAnimationState(PLAYER_IDLE);
         }
         
-        if (Mathf.Abs(moveinputX) > .01f && isgrounded && !IsfallingDown && !isRollinginair && !isRolling && !isLanded && !Combat_Systeme.isAttacking && !Combat_Systeme.isSpecialAttacking)
+        if (Mathf.Abs(moveinputX) > .01f && isgrounded && !IsfallingDown && !isRollinginair && !isRolling && !isLanded && !Combat_Systeme.isAttacking && !Combat_Systeme.isSpecialAttacking && !grab.GrabAnim)
         {
             PlayerAnimationState(PLAYER_WALK);
+        }
+        if(grab.GrabAnim)
+        {
+            PlayerAnimationState(PLAYER_GRABING);
         }
     }
 
