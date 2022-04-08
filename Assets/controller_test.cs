@@ -42,7 +42,6 @@ public class controller_test : MonoBehaviour
     private State state;
 
     private HPbar hpbar;
-
     private CaC_combat_systeme Combat_Systeme;
     private Grab grab;
     
@@ -56,13 +55,13 @@ public class controller_test : MonoBehaviour
     private Vector3 rolldirneg = new Vector3(-1, 0, 0);
     private Vector3 CurrentPostion;
 
+    public bool isgrounded;
+    public bool isLanded;
+    public bool IsfallingDown;
     private bool isRollinginair;
-    private bool isgrounded;
     private bool isdashbuttondown;
     private bool isDoubleJumping;
-    private bool IsfallingDown;
     private bool isRolling;
-    private bool isLanded;
     private bool CanRoll;
     private bool hasjumped;
 
@@ -315,19 +314,18 @@ public class controller_test : MonoBehaviour
         transform.localScale = charecterScale;
     }
 
-    // landed event Trigger
-    void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Sol" && hasjumped == true)
+        if (collision.gameObject.layer == LayerMask.NameToLayer("sol") && IsfallingDown)
         {
+            print("landed");
             isLanded = true;
             StartCoroutine(CoroutineLandedlDelay());
-            
+
             // Animation
             PlayerAnimationState(PLAYER_LANDED);
         }
     }
-
     void Update()
     {
         // Animation delay getting the animator timing
@@ -366,7 +364,7 @@ public class controller_test : MonoBehaviour
             case State.Grabing:
                 PlayerGrabbingMouvement();
                 MCflip();
-                
+
                 // GEt out of the sate 
                 if (!grab.IsHoldingAgrabedItem)
                 {
