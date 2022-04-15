@@ -12,15 +12,16 @@ public class CaC_combat_systeme : MonoBehaviour
     public Transform MCSpecialAttakpoint;
 
     private controller_test Controller_Test;
-
+    [Header(" Attack DMG parameters")]
     [SerializeField] private float MCattackRange = 0.2f;
     [SerializeField] private float MCSpecialAttakrange = 0.5f;
-    [SerializeField] private float BaseAttackDelay;
-    [SerializeField] private float SpecialAttackDelay;
     public float MCAttackDamage;
-    public float MCattackRate = 2f;
     public float MCSpecialAttakDammage;
+   [Header(" Attack CD parameters")] 
+    public float MCattackRate = 2f;
     public float Specialattakrate =0.2f;
+    [SerializeField] private float SpecialAttackDelay;
+    [SerializeField] private float BaseAttackDelay;
     private float nextAttack;
     private float nextSpecialattak;
 

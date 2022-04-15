@@ -26,9 +26,8 @@ public class Grab : MonoBehaviour
 
     public bool IsHoldingAgrabedItem;
     public bool Grabbing;
-    private bool CanGrab;
-    private bool CanRelease;
     public bool GrabAnim;
+    private bool CanRelease;
 
     public float Grabrange;
     [SerializeField] private float ThrowStrenght;
@@ -54,13 +53,14 @@ public class Grab : MonoBehaviour
         nbofgrabInput = 0;
     }
     private void Grabbleobject()
-    {         
-        //just changed dir vector                
+    {    
+        // Grab Range raycast
         RaycastHit2D ray = Physics2D.Raycast(RayCatsPoint.position, new Vector2(MC.localScale.x, 0), Grabrange, GrabbableItem);
         Debug.DrawRay(new Vector2(RayCatsPoint.position.x, RayCatsPoint.position.y), new Vector2(MC.localScale.x, 0) * Grabrange, Color.red);
 
         if (Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Grab"))
         {     
+            // Animation
             GrabAnim = true;
             StartCoroutine(CoroutineGrabAnimation());
 
@@ -85,7 +85,6 @@ public class Grab : MonoBehaviour
 
                 StartCoroutine(CoroutinereTriggerDelay());
                 StartCoroutine(CoroutineRelease());
-                Debug.Log(gameObject.name + " is grabbed");               
             }
         }
     }

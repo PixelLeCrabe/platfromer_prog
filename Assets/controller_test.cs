@@ -6,15 +6,20 @@ public class controller_test : MonoBehaviour
 { 
     // Animation Handler
     public string Currentstate;
-/*
-    public const string PLAYER_IDLE = ("idle_double_mechant");
-    public const string PLAYER_WALK = ("walking_cycle_double_mechant");
-    public const string PLAYER_JUMP = ("Jump");
-    public const string PLAYER_DOUBLEJUMP = ("MC_double_jump");
-    public const string PLAYER_FALLING_DOWN = ("MC_fallingDown");
-    public const string PLAYER_LANDED   = ("MC_landed");
-    public const string PLAYER_ROLLING = ("MC_roulade");
-*/
+
+    #region player Animation Backup
+    /*
+        public const string PLAYER_IDLE = ("idle_double_mechant");
+        public const string PLAYER_WALK = ("walking_cycle_double_mechant");
+        public const string PLAYER_JUMP = ("Jump");
+        public const string PLAYER_DOUBLEJUMP = ("MC_double_jump");
+        public const string PLAYER_FALLING_DOWN = ("MC_fallingDown");
+        public const string PLAYER_LANDED   = ("MC_landed");
+        public const string PLAYER_ROLLING = ("MC_roulade");
+    */
+    #endregion
+
+    #region player Animation
     public const string PLAYER_IDLE = ("King_idle");
     public const string PLAYER_WALK = ("King_Walk");
     public const string PLAYER_JUMP = ("King_jump1");
@@ -27,6 +32,7 @@ public class controller_test : MonoBehaviour
     public const string PLAYER_GRABING = ("King_Grab");
     public const string PLAYER_THROWING = ("King_Throw");
     public const string PLAYER_REALESING = ("King_Release");
+    #endregion
 
     private enum State
     {
@@ -318,7 +324,7 @@ public class controller_test : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("sol") && IsfallingDown)
         {
-            print("landed");
+            //print("landed");
             isLanded = true;
             StartCoroutine(CoroutineLandedlDelay());
 
@@ -398,6 +404,7 @@ public class controller_test : MonoBehaviour
                 break;
         }
     }
+    #region Coroutines
     IEnumerator CoroutineInvisibleRollCD()
     {
         yield return new WaitForSeconds(1);
@@ -421,4 +428,5 @@ public class controller_test : MonoBehaviour
         yield return new WaitForSeconds(LandedAnimationDelay);
         isLanded = false;
     }
+    #endregion
 }

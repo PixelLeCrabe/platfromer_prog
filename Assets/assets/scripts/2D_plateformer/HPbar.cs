@@ -5,19 +5,22 @@ using UnityEngine.UI;
 
 public class HPbar : MonoBehaviour
 {
+    public MediumProps mediumprops;
+    
     public static HPbar instance;
+
     public Slider slider;
-    private int MaxHealt = 100;
-    public float currenthealth;
+    
+    [SerializeField] int MaxHealt = 100;
+    [HideInInspector]public float currenthealth;
     //base HP 
     //Target HP
-    public bool isinvisible = false;
+    [HideInInspector]public bool isinvisible = false;
     private float Damage = 10f;
 
     private void Start()
     {
-        currenthealth = MaxHealt;
-        
+        currenthealth = MaxHealt;   
     }
 
     private void Awake()
@@ -33,7 +36,6 @@ public class HPbar : MonoBehaviour
         }
     }
    
-   
     private void Die()
     {
         if (currenthealth < 0)
@@ -45,18 +47,15 @@ public class HPbar : MonoBehaviour
     {
         slider.maxValue = MaxHealt;
         slider.value = currenthealth;
-
     }
 
     public void Sethealth()
     {
         slider.value = currenthealth;
-
     }
 
     private void Update()
     {
-       
         Die();
         
         // for testing

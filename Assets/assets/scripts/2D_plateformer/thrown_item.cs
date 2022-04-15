@@ -1,73 +1,61 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class thrown_item : MonoBehaviour
 {
+    #region Variables
+    public MediumProps mediumprops;
+    
+    private Grab grab;
+
     private Transform DmgPoint;
 
-    [SerializeField] private LayerMask DamagableEntities;
-
-    [SerializeField] private float DmgAmount;
-    [SerializeField] private float Dmgrange;
-
-    private Grab grab;
+    [SerializeField] LayerMask DamagableEntities;
 
     private bool HasBeenGrabOnce;
     public bool ItemIsGrabed;
-
+    #endregion
     private void Start()
     {
-        DmgPoint = GetComponentInChildren<Transform>();
-        HasBeenGrabOnce = false;
+        // transform can be unique to differents entities
+        DmgPoint = GetComponentInChildren<Transform>();    
     }
-
-    private void Isgrabbed()
+    
+    void OnTriggerEnter2D(Collider2D C)
     {
-        // Test : Identify the grabed item by his name 
-        /*if (gameObject.name == Grab.instance.GrabedItemName && Grab.instance.IsHoldingAgrabedItem)
-        {
-            ItemIsGrabed = true;
-            gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-            HasBeenGrabOnce = true;
-            Debug.Log(gameObject.name + " is Grabbed and dynamik");
-        }     
-        */
-    }
-    private void Explosion()
-    {
-    }
+        // Filter entities that can be ,hit by the projectile
+        if (C.gameObject.layer == LayerMask.NameToLayer("enemy") && Grab.instance.GrabedItemName == gameObject.name) // No hit when the barrel is realesed
+        { 
+            print("Barrel touched : " + C.gameObject.name);
+            
+            Collider2D[] hitEntity = Physics2D.OverlapCircleAll(DmgPoint.position, mediumprops.DMGRange, DamagableEntities);
 
-    private void OnCollisionEnter2D()
-    {
+            foreach (Collider2D enemy in hitEntity)
+                {
+                    Cinemachine_cameraShake.instance.MCAttackShake(.5f, 0.2f);
+                    enemy.GetComponent<Enemy>().takeDamage(mediumprops.DMGAmount);
 
-        // add condition To avoid hitting the MC when he grabs the barrel 
-        // No hit when the barrel is realesed
-        if (!HasBeenGrabOnce) return;
-        
-        Collider2D[] hitEntity = Physics2D.OverlapCircleAll(DmgPoint.position, Dmgrange, DamagableEntities);
+                    print(gameObject.name + " Is damaged by a barrel");
+                }
+            }
+            //if (!HasBeenGrabOnce) return;
 
-        foreach (Collider2D enemy in hitEntity)
-        {
-            //Cinemachine_cameraShake.instance.MCAttackShake(.5f, 0.2f);
-            //enemy.GetComponent<Enemy>().takeDamage(DmgAmount);
+            //Collider2D[] hitEntity = Physics2D.OverlapCircleAll(DmgPoint.position, mediumprops.DMGRange, DamagableEntities);
 
-            print(enemy.tag + " Is damaged by a barrel");
+            /*foreach (Collider2D enemy in hitEntity)
+            {
+                //Cinemachine_cameraShake.instance.MCAttackShake(.5f, 0.2f);
+                //enemy.GetComponent<Enemy>().takeDamage(DmgAmount);
+
+                print(enemy.tag + " Is damaged by a barrel");
+            }
+            Debug.Log(gameObject.name + " Hit the ground");
+            */
+            // Not relevent for now
+            //gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;        
         }
-        Debug.Log(gameObject.name + " Hit the ground");
-        
-        // Not relevent for now
-        //gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;        
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        Isgrabbed();
-
-        /*if (!Grab.instance.IsHoldingAgrabedItem)
-        {
-            ItemIsGrabed = false;
-        }*/
-        //Explosion();
-    }
+        void Update()
+    {    }
 }
