@@ -85,6 +85,7 @@ public class Grab : MonoBehaviour
 
                 StartCoroutine(CoroutinereTriggerDelay());
                 StartCoroutine(CoroutineRelease());
+                //Debug.Log(gameObject.name + " is grabbed");               
             }
         }
     }

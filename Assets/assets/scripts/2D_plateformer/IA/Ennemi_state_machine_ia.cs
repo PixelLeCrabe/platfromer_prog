@@ -8,18 +8,18 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     public Transform Spidergrx;
     public Transform Target;
     public Transform RaycatsPoint;
-    public Transform Ennemygroundcheck;
+    [SerializeField] Transform Ennemygroundcheck;
 
     public LayerMask ObstacleLayer;
 
-    public Animator Eanimator;
+    Animator Eanimator;
     Rigidbody2D rb2d;
     Collider2D Col2d;
 
     private thrown_item trhownItem;
     private Enemy enemy;
 
-    public float EnnemySpeed;
+    [SerializeField] float EnnemySpeed;
     public float EnnemyCurrentSpeed;
     public float Ennemydetectrange;
     public float Ennemyfallmultipliyer;
@@ -50,6 +50,8 @@ public class Ennemi_state_machine_ia : MonoBehaviour
 
     void Start()
     {
+
+        Eanimator = GetComponentInChildren<Animator>();
         state = State.idle;
         rb2d = GetComponent<Rigidbody2D>();
         EnnemyCurrentSpeed = EnnemySpeed;
@@ -70,8 +72,6 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         {
             Spidergrx.localScale = new Vector3(1f, 1, 1f);
         }
-
-        Eanimator.SetTrigger("Walking");
     }
     private void targetinrange()
     {
@@ -99,12 +99,14 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         //var positionOffset = (Physics2D.gravity * rb2d.gravityScale) + (new Vector2( Spidergrx.localScale.x, 0) * EnnemySpeed);
         //rb2d.MovePosition(rb2d.position + positionOffset * Time.fixedDeltaTime);        
         if (!Ennemyisgrounded) return;
+        print("Gettingtotarget");
         rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemyCurrentSpeed * Time.deltaTime, ForceMode2D.Impulse);            
     }
-    private void IsGrabed()
+    
+   void IsGrabed()
     {
         if(trhownItem.ItemIsGrabed)
-        {
+        {       
             state = State.Grabed;
         }
     }
@@ -224,12 +226,17 @@ public class Ennemi_state_machine_ia : MonoBehaviour
 
             case State.Grabed:
                 IsDead();
+
+                Eanimator.SetBool("Grabbed", true);
+                print(" Enemy State is grabed");
+
+                //Getting out of the state
                 if(Grab.instance.IsHoldingAgrabedItem == false)
                 {
+                    //Eanimator.Play("spieder_grabbed");
                     state = State.idle;
                     print("Get out of Grabed state");
                 }                
-                print(" Enemy State is grabed");
                 break;
 
             case State.LandafterThrow:
