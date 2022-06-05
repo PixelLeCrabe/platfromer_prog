@@ -43,8 +43,7 @@ public class Enemy1_CaC_Attack : MonoBehaviour
     {
         if (AbletoAttack == true)
         {
-           // EnemyNextAttack = Time.time + 1f / EnemyAttack;
-           
+           // EnemyNextAttack = Time.time + 1f / EnemyAttack
         }
     }
 
@@ -58,7 +57,7 @@ public class Enemy1_CaC_Attack : MonoBehaviour
         Eanimator.SetBool("Attacking", true);
         StartCoroutine(CoroutineAnimationAttack());
         HPbar.instance.TakeDamage();
-        print("has attack");
+        //print("has attack");
         yield return new WaitForSeconds(EnemyAttackCD);
         CanAttak = true;
     }

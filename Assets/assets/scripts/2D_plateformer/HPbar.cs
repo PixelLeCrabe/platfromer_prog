@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class HPbar : MonoBehaviour
 {
-    public MediumProps mediumprops;
-    
     public static HPbar instance;
 
     public Slider slider;

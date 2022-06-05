@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CaC_combat_systeme : MonoBehaviour
-{
+public class CaC_combat_systeme : MonoBehaviour{
     public static CaC_combat_systeme instance;
 
     public Animator animator;
@@ -12,12 +11,14 @@ public class CaC_combat_systeme : MonoBehaviour
     public Transform MCSpecialAttakpoint;
 
     private controller_test Controller_Test;
+    
     [Header(" Attack DMG parameters")]
     [SerializeField] private float MCattackRange = 0.2f;
     [SerializeField] private float MCSpecialAttakrange = 0.5f;
     public float MCAttackDamage;
     public float MCSpecialAttakDammage;
-   [Header(" Attack CD parameters")] 
+   
+    [Header(" Attack CD parameters")] 
     public float MCattackRate = 2f;
     public float Specialattakrate =0.2f;
     [SerializeField] private float SpecialAttackDelay;

@@ -7,5 +7,5 @@ public class MediumProps : ScriptableObject
 {
     public float DMGAmount;
     public float DMGRange;
-
+    public float CameraShakeAmount;
 }

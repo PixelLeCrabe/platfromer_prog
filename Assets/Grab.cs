@@ -28,8 +28,11 @@ public class Grab : MonoBehaviour
     public bool Grabbing;
     public bool GrabAnim;
     private bool CanRelease;
+    public bool ItemIsThrown;
 
     public float Grabrange;
+    [Header("Trow Parameters")]
+        
     [SerializeField] private float ThrowStrenght;
     [SerializeField] private float GrabTriggerDelay;
     [SerializeField] private float GrabAnimation;
@@ -71,8 +74,13 @@ public class Grab : MonoBehaviour
                 IsHoldingAgrabedItem = true;
 
                 // TP the Gameobject
+                // grabed item initial gravity
                  GrabedItemGravityAmount = ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale;
+                
+                // Set the gravity of the object to 0
                  ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+
+                // Rigidbody2D of the object 
                  GrabbedItem = ray.collider.gameObject.GetComponent<Rigidbody2D>();
 
                 // Test : Identify the grabed item by his name 
@@ -90,17 +98,25 @@ public class Grab : MonoBehaviour
         }
     }
 
-    private void ReleaseItem2()
+    private void ThrowItem(int throwdirx, float ThrowDiry)
+    {
+        IsHoldingAgrabedItem = false;
+        GrabbedItem.AddForce(new Vector2(throwdirx, ThrowDiry) * ThrowStrenght, ForceMode2D.Impulse);
+        GrabbedItem.gravityScale = GrabedItemGravityAmount;
+
+        // Item is thrown 
+        ItemIsThrown = true;
+    }
+
+    private void ReleaseItem()
     {
         if ((Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Grab")) && CanRelease && IsHoldingAgrabedItem)
         {         
-            print("Grabbing"); 
+            //print("Grabbing"); 
             // Throw right
             if (Input.GetAxis("Horizontal") > 0)
             {
-                IsHoldingAgrabedItem = false;
-                GrabbedItem.AddForce(new Vector2(1, 0.1f) * ThrowStrenght, ForceMode2D.Impulse);
-                GrabbedItem.gravityScale = GrabedItemGravityAmount;
+                ThrowItem(1, .1f);
                 print(" Throw Item Right");
 
                 // Animation
@@ -110,10 +126,9 @@ public class Grab : MonoBehaviour
             // Throw left
             else if (Input.GetAxis("Horizontal") < 0)
             {
-                IsHoldingAgrabedItem = false;
-                GrabbedItem.AddForce(new Vector2(-1, 0.1f) * ThrowStrenght, ForceMode2D.Impulse);
-                GrabbedItem.gravityScale = GrabedItemGravityAmount;
-                print(" Throw Item left");
+                ThrowItem(-1, .1f);
+
+                //print(" Throw Item left");
 
                 // Animation
                 //Controller_Test.PlayerAnimationState(PLAYER_THROWING);
@@ -123,7 +138,7 @@ public class Grab : MonoBehaviour
             {
                 IsHoldingAgrabedItem = false;
                 GrabbedItem.gravityScale = GrabedItemGravityAmount;
-                print("releasing an item with W");
+                //print("releasing an item with W");
 
                 // Animation
                 //Controller_Test.PlayerAnimationState(PLAYER_REALESING);
@@ -134,10 +149,9 @@ public class Grab : MonoBehaviour
             // Throw up
             if (Input.GetAxis("Vertical") > 0.1)
             {
-                IsHoldingAgrabedItem = false;
-                GrabbedItem.AddForce(new Vector2(0, 1) * ThrowStrenght, ForceMode2D.Impulse);
-                GrabbedItem.gravityScale = GrabedItemGravityAmount;
-                print(" Throw Item up");
+                ThrowItem(0, 1);
+
+                //print(" Throw Item up");
 
                 // Animation
                 //Controller_Test.PlayerAnimationState(PLAYER_THROWING);
@@ -146,9 +160,7 @@ public class Grab : MonoBehaviour
                 // Throw Down
               else if (Input.GetAxis("Vertical") < 0)
             {
-                IsHoldingAgrabedItem = false;
-                GrabbedItem.AddForce(new Vector2(0, -1) * ThrowStrenght, ForceMode2D.Impulse);
-                GrabbedItem.gravityScale = GrabedItemGravityAmount;
+                ThrowItem(0, -1f);
                 print(" Throw Item Down");
 
                 // Animation
@@ -170,7 +182,7 @@ public class Grab : MonoBehaviour
     void Update()
     {
         Grabbleobject();
-        ReleaseItem2();
+        ReleaseItem();
         
         //HoldingItem in fixed Update
     }
@@ -179,6 +191,7 @@ public class Grab : MonoBehaviour
         HoldinganItem();
     }
 
+    #region Coroutines
     IEnumerator CoroutineRelease()
     {
         yield return new WaitForSeconds(1f);
@@ -208,4 +221,5 @@ public class Grab : MonoBehaviour
         yield return new WaitForSeconds(GrabAnimation);
         GrabAnim = false;
     }
+    #endregion
 }

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79cfd626a69e4384491523ac689e3c55, type: 3}
-  m_Name: Tonneau
+  m_Name: BaseEnemy
   m_EditorClassIdentifier: 
-  DMGAmount: 5
-  DMGRange: 4
+  DMGAmount: 2
+  DMGRange: 2
   CameraShakeAmount: 0.5

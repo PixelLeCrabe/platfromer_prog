@@ -29,7 +29,6 @@ public class Enemy : MonoBehaviour
 
     public void takeDamage(float damage)
     {
-
         if(!isDead)
         {
             hasBeenHit = true;

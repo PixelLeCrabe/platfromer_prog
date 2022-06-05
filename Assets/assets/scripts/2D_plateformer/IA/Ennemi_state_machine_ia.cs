@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Ennemi_state_machine_ia : MonoBehaviour
 {
+    [Header("transforms")]
     public Transform Spidergrx;
     public Transform Target;
     public Transform RaycatsPoint;
@@ -16,10 +17,13 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     Rigidbody2D rb2d;
     Collider2D Col2d;
 
+    private  controller_test Controller;
     private thrown_item trhownItem;
     private Enemy enemy;
 
+    [Header("Enemy Parameters")]
     [SerializeField] float EnnemySpeed;
+    [SerializeField] float JumpForce;
     public float EnnemyCurrentSpeed;
     public float Ennemydetectrange;
     public float Ennemyfallmultipliyer;
@@ -28,6 +32,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     private bool targetIsInrange;
     private bool iscollidingwithMC;
     private bool Ennemyisgrounded;
+    private bool ObstacleInFront;
 
     private Ray2D Obstacledetection;
 
@@ -62,7 +67,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     {
         TargetPosition = GameObject.FindGameObjectWithTag("Player").transform.position;
     }
-    private void Flipthecharacter()
+    private void FlipTheCharacter()
     {
         if (Target.localPosition.x < transform.localPosition.x)
         {
@@ -75,15 +80,14 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     }
     private void targetinrange()
     {
-        if (Vector3.Distance(transform.position, TargetPosition) < Ennemydetectrange && !transform.GetComponent<Enemy>().isDead && !transform.GetComponent<Enemy>().isHit)
+        if (Vector3.Distance(transform.position, TargetPosition) < Ennemydetectrange && !transform.GetComponent<Enemy>().isDead && !transform.GetComponent<Enemy>().isHit && !ObstacleInFront)
         {
             print("target is in range");
             
             state = State.ChaseTarget;        
         }
-       
     }
-    private void Targetoutofrange()
+    private void TargetOutofRange()
     {
         if (Vector3.Distance(transform.position, TargetPosition) > Ennemydetectrange)
         {
@@ -98,33 +102,39 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         //rb2d.velocity = Vector2.right * EnnemySpeed * Time.deltaTime;
         //var positionOffset = (Physics2D.gravity * rb2d.gravityScale) + (new Vector2( Spidergrx.localScale.x, 0) * EnnemySpeed);
         //rb2d.MovePosition(rb2d.position + positionOffset * Time.fixedDeltaTime);        
+        
+        // this is gettin him crazy when thrown in the air
         if (!Ennemyisgrounded) return;
-        print("Gettingtotarget");
+        //print("Gettingtotarget");
         rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemyCurrentSpeed * Time.deltaTime, ForceMode2D.Impulse);            
     }
     
-   void IsGrabed()
+    void IsGrabed()
     {
         if(trhownItem.ItemIsGrabed)
         {       
             state = State.Grabed;
         }
     }
-    private void ObstacleDetected()
+    void ObstacleDetected()
     {
         Debug.DrawRay(new Vector2(Raycastpoint.x, Raycastpoint.y), new Vector2 (Spidergrx.localScale.x, 0 )*.2f, Color.red);
         
         RaycastHit2D hit = Physics2D.Raycast(Raycastpoint, new Vector2 (Spidergrx.localScale.x ,0) , .2f, ObstacleLayer);
-        if (hit.collider != null)
-            {
-                print("there is an obstacle at 0.2");
+        if (hit)
+        {
+            ObstacleInFront = true;
+            print("there is an obstacle at 0.2");
             state = State.jumping;
         }
+        else 
+            ObstacleInFront = false;
     }
     private void EnnemyJump()
     {
-        rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemySpeed);
-        rb2d.AddForce(Vector2.up * EnnemySpeed);
+        print("Spider supposed to jump");
+        rb2d.AddForce(new Vector2(Spidergrx.localScale.x * .2f, 1 ) * JumpForce, ForceMode2D.Impulse);
+
     }
     private void IsDead()
     {
@@ -142,8 +152,8 @@ public class Ennemi_state_machine_ia : MonoBehaviour
             EnnemyCurrentSpeed = EnnemySpeed;
     } 
     private void HitStagger()
-    {
-        Vector2 difference = transform.position - controler2D_plateformingv2.instance.transform.position;
+    {        
+        Vector2 difference = transform.position - TargetPosition;
         difference = difference.normalized;
         rb2d.AddForce(difference * baseAttakKnockbackAmount, ForceMode2D.Impulse);
         
@@ -187,9 +197,8 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         //Lui la c'est un fdp ya plein de boolean à gerer
         targetinrange();
 
-        Flipthecharacter();
+        FlipTheCharacter();
         FindTargetPosition();
-        ObstacleDetected();
         CollidingwithMC();
         IsGrabed();
 
@@ -204,24 +213,30 @@ public class Ennemi_state_machine_ia : MonoBehaviour
             case State.ChaseTarget:
                 print("state is chase target");
                 GettoTarget();
-                Targetoutofrange();
+                TargetOutofRange();
                 IsDead();
                 isHit();
+                ObstacleDetected();
                 break;
 
             case State.jumping:
-                EnnemyJump();               
-                break;
+                print("state is jumping");
 
-            case State.Dead:
-                print("State is dead");
-                this.enabled = false;
+                ObstacleDetected();
+                EnnemyJump();
+                if (!ObstacleInFront)
+                    state = State.ChaseTarget;
                 break;
 
             case State.Hit:
                 HitStagger();
                 IsDead();
                 print("State is Hit");
+                break;
+
+            case State.Dead:
+                print("State is dead");
+                this.enabled = false;
                 break;
 
             case State.Grabed:
@@ -244,10 +259,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
                 break;
         }
     }
-
-    private void FixedUpdate()
-    {                  
-    }
+    #region coroutines
     IEnumerator CoroutineWaitFordeath()
     {
         yield return new WaitForSeconds(.2f);
@@ -258,4 +270,5 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         yield return new WaitForSeconds(.2f);
         print("is not damaged anymore");
     }
+    #endregion
 }

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79cfd626a69e4384491523ac689e3c55, type: 3}
-  m_Name: Tonneau
+  m_Name: Chair
   m_EditorClassIdentifier: 
-  DMGAmount: 5
-  DMGRange: 4
-  CameraShakeAmount: 0.5
+  DMGAmount: 0
+  DMGRange: 0
+  CameraShakeAmount: 0
