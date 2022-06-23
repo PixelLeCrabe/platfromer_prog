@@ -61,6 +61,8 @@ public class Grab : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Grab"))
         {     
             // Animation
+            //ui 
+
             GrabAnim = true;
             StartCoroutine(CoroutineGrabAnimation());
 
