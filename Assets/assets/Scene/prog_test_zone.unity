@@ -2674,7 +2674,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73e15667be824de48a428dff57f57959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mediumprops: {fileID: 0}
   slider: {fileID: 1769476121}
   MaxHealt: 100
   currenthealth: 0
@@ -7131,7 +7130,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 999384116}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.696, y: -11.612, z: 0}
+  m_LocalPosition: {x: -5.696, y: -11.634, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children: []
   m_Father: {fileID: 0}
@@ -10102,7 +10101,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1306493098}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0454, y: -0.124, z: 0}
+  m_LocalPosition: {x: 0.042, y: -0.124, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1926229059}
@@ -14678,7 +14677,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2072995704}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.031, y: -11.298, z: 0}
+  m_LocalPosition: {x: -6.298, y: -11.523, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1926229059}

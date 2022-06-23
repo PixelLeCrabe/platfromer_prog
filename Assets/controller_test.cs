@@ -56,9 +56,7 @@ public class controller_test : MonoBehaviour
     public Transform groundcheck;
 
     private Vector2 movedir;
-    private Vector3 RollDir;
-    private Vector3 rolldirpos = new Vector3(1, 0, 0);
-    private Vector3 rolldirneg = new Vector3(-1, 0, 0);
+    private Vector3 RollDir;    
     private Vector3 CurrentPostion;
 
     public bool isgrounded;
@@ -68,7 +66,6 @@ public class controller_test : MonoBehaviour
     private bool isdashbuttondown;
     private bool isDoubleJumping;
     private bool isRolling;
-    private bool CanRoll;
     private bool hasjumped;
 
     [SerializeField] private float airRollamount;
@@ -89,7 +86,7 @@ public class controller_test : MonoBehaviour
     private float PlayerGrabbingSpeed;
     private float LastMoveDir;
     private float moveinputX;
-
+    
     [SerializeField] private int extrajumpamount;
     private int extrajumps;
 
@@ -101,7 +98,7 @@ public class controller_test : MonoBehaviour
         state = State.Normal;
         airRoll = airRollamount;
         hpbar = GetComponent<HPbar>();
-        CanRoll = true;
+        isRolling = false;
     }
     public void PlayerAnimationState(string newState)
     {
@@ -118,11 +115,13 @@ public class controller_test : MonoBehaviour
         movedir = new Vector3(moveinputX, 0);
 
         PlayerCurrentSpeed = moveinputX * speed * Time.deltaTime;
-        PlayerGrabbingSpeed = moveinputX * (speed /2)* Time.deltaTime;
+        //PlayerGrabbingSpeed = moveinputX * (speed /2)* Time.deltaTime;
 
+
+        // PLayer Animation
         if (Mathf.Abs(moveinputX) < .01f && isgrounded && !isRolling && !isLanded && Rb2d.velocity.y < .1f && !Combat_Systeme.isAttacking && !Combat_Systeme.isSpecialAttacking && !grab.GrabAnim) 
         {
-            // Animation
+           
             PlayerAnimationState(PLAYER_IDLE);
         }
         
@@ -193,17 +192,14 @@ public class controller_test : MonoBehaviour
 
     void Roll()
     {
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("Fire3")) && airRoll >= 0 && CanRoll)
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("Fire3")) && airRoll >= 0 && !isRolling)
         {
-            CanRoll = false;
             isRolling = true;
             RollDir = movedir;
             state = State.Rolling;
             RollSpeed = 10f;
             airRoll--;
             //HPbar.instance.isinvisible = true;
-            StopAllCoroutines();
-            StartCoroutine(CoroutineInvisibleRollCD());
             StartCoroutine(CoroutineRollCD());
             StartCoroutine(CoroutineRollDelay());
 
@@ -218,14 +214,6 @@ public class controller_test : MonoBehaviour
             RollDir = new Vector3(transform.localScale.x, 0);
         }
 
-        if (moveinputX < 0)
-        {
-            RollDir = rolldirneg;
-        }
-        else if (moveinputX > 0)
-        {
-            RollDir = rolldirpos;
-        }
     }
     private void ExitRoll()
     {
@@ -255,7 +243,7 @@ public class controller_test : MonoBehaviour
             CurrentPostion = transform.position;
         }
 
-        Rb2d.velocity = new Vector2(PlayerCurrentSpeed, Rb2d.velocity.y);
+        //Rb2d.velocity = new Vector2(PlayerCurrentSpeed, Rb2d.velocity.y);
     }
     private void DashLogic()
     {
@@ -340,7 +328,6 @@ public class controller_test : MonoBehaviour
         switch (state)
         {
             case State.Normal:
-
                 PlayerMouvement();
 
                 MCjumping();
@@ -386,10 +373,16 @@ public class controller_test : MonoBehaviour
         switch (state)
         {
             case State.Normal:
+                
                 isgrounded = Physics2D.OverlapCircle(groundcheck.position, checkradius, whatisground);
 
                 //Player movement
-                Rb2d.velocity = new Vector2(PlayerCurrentSpeed, Rb2d.velocity.y);
+
+                Rb2d.velocity = new Vector2(moveinputX * speed *Time.deltaTime, Rb2d.velocity.y);
+                
+                //Rb2d.AddForce(new Vector2(moveinputX, 0) * speed * Time.deltaTime, ForceMode2D.Force);
+                //print(PlayerCurrentSpeed);
+                print("rb2d vel" + Rb2d.velocity);                
 
                 DashPhysic();
                 break;
@@ -400,21 +393,17 @@ public class controller_test : MonoBehaviour
 
             case State.Grabing:
                 //Player movement
-                Rb2d.velocity = new Vector2(PlayerGrabbingSpeed, Rb2d.velocity.y);
+                Rb2d.velocity = new Vector2(speed/2, Rb2d.velocity.y);
                 break;
         }
     }
     #region Coroutines
-    IEnumerator CoroutineInvisibleRollCD()
-    {
-        yield return new WaitForSeconds(1);
-        HPbar.instance.isinvisible = false;
-    }
 
     IEnumerator CoroutineRollCD()
     {
         yield return new WaitForSeconds(RollCD);
-        CanRoll = true;
+        isRolling = false;
+        HPbar.instance.isinvisible = false;
     }
 
     IEnumerator CoroutineRollDelay()

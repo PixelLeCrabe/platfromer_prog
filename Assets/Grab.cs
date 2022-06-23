@@ -74,8 +74,10 @@ public class Grab : MonoBehaviour
                 IsHoldingAgrabedItem = true;
 
                 // TP the Gameobject
+                ray.collider.gameObject.GetComponent<Rigidbody2D>().position = Holdpoint.position;
+
                 // grabed item initial gravity
-                 GrabedItemGravityAmount = ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale;
+                GrabedItemGravityAmount = ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale;
                 
                 // Set the gravity of the object to 0
                  ray.collider.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
@@ -161,7 +163,7 @@ public class Grab : MonoBehaviour
               else if (Input.GetAxis("Vertical") < 0)
             {
                 ThrowItem(0, -1f);
-                print(" Throw Item Down");
+                //print(" Throw Item Down");
 
                 // Animation
                 //Controller_Test.PlayerAnimationState(PLAYER_THROWING); 

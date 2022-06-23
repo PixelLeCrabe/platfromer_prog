@@ -22,7 +22,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     private Enemy enemy;
 
     [Header("Enemy Parameters")]
-    [SerializeField] float EnnemySpeed;
+    [SerializeField] float EnnemySpeed; // correct amount is 20
     [SerializeField] float JumpForce;
     public float EnnemyCurrentSpeed;
     public float Ennemydetectrange;
@@ -82,7 +82,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     {
         if (Vector3.Distance(transform.position, TargetPosition) < Ennemydetectrange && !transform.GetComponent<Enemy>().isDead && !transform.GetComponent<Enemy>().isHit && !ObstacleInFront)
         {
-            print("target is in range");
+            //print("target is in range");
             
             state = State.ChaseTarget;        
         }
@@ -120,11 +120,11 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     {
         Debug.DrawRay(new Vector2(Raycastpoint.x, Raycastpoint.y), new Vector2 (Spidergrx.localScale.x, 0 )*.2f, Color.red);
         
-        RaycastHit2D hit = Physics2D.Raycast(Raycastpoint, new Vector2 (Spidergrx.localScale.x ,0) , .2f, ObstacleLayer);
+        RaycastHit2D hit = Physics2D.Raycast(Raycastpoint, new Vector2 (Spidergrx.localScale.x ,0) , .3f, ObstacleLayer);
         if (hit)
         {
             ObstacleInFront = true;
-            print("there is an obstacle at 0.2");
+            //print("there is an obstacle at 0.2");
             state = State.jumping;
         }
         else 
@@ -132,8 +132,8 @@ public class Ennemi_state_machine_ia : MonoBehaviour
     }
     private void EnnemyJump()
     {
-        print("Spider supposed to jump");
-        rb2d.AddForce(new Vector2(Spidergrx.localScale.x * .2f, 1 ) * JumpForce, ForceMode2D.Impulse);
+        //print("Spider supposed to jump");
+        rb2d.AddForce(new Vector2(Spidergrx.localScale.x * .3f, 1 ) * JumpForce, ForceMode2D.Impulse);
 
     }
     private void IsDead()
@@ -160,7 +160,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         //rb2d.AddForce(new Vector2(Spidergrx.localScale.x, 0) * EnnemyCurrentSpeed, ForceMode2D.Force);
         //rb2d.AddForce(new Vector2 (((Math.Abs(transform.position.x) + baseAttakKnockbackAmount) * Spidergrx.localScale.x), 0), ForceMode2D.Impulse);
 
-        print("stagger force applied");
+        //print("stagger force applied");
     }
     private void isHit()
     {
@@ -206,12 +206,12 @@ public class Ennemi_state_machine_ia : MonoBehaviour
         {
             default:
             case State.idle:
-                print("state is idle");
+                //print("state is idle");
                 IsDead();
                 break;
 
             case State.ChaseTarget:
-                print("state is chase target");
+                //print("state is chase target");
                 GettoTarget();
                 TargetOutofRange();
                 IsDead();
@@ -220,7 +220,7 @@ public class Ennemi_state_machine_ia : MonoBehaviour
                 break;
 
             case State.jumping:
-                print("state is jumping");
+                //print("state is jumping");
 
                 ObstacleDetected();
                 EnnemyJump();
