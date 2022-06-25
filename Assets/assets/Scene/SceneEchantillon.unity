@@ -2874,7 +2874,7 @@ MonoBehaviour:
   lowjumpmultipliyer: 2
   fallmultipliyer: 1.5
   dashdistance: 0.8
-  speed: 40
+  speed: 100
   jumpforce: 3
   RollCD: 0.5
   AnimationDelay: 0
